@@ -1006,7 +1006,7 @@ GameObject:
   - component: {fileID: 8558771241758111065}
   - component: {fileID: 3975272698542209970}
   m_Layer: 7
-  m_Name: PlayerCharacter
+  m_Name: PlayerCharacter_AR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1144,8 +1144,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e68dbf7fa82d3214ab27c10d861296fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveSpeed: 2
-  SprintSpeed: 5.335
+  MoveSpeed: 3
+  SprintSpeed: 5
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
   LandingAudioClip: {fileID: 0}
