@@ -1004,7 +1004,7 @@ GameObject:
   - component: {fileID: 2535922150406930070}
   - component: {fileID: 8213724037166247520}
   - component: {fileID: 8558771241758111065}
-  - component: {fileID: 226634151269537317}
+  - component: {fileID: 3975272698542209970}
   m_Layer: 7
   m_Name: PlayerCharacter
   m_TagString: Untagged
@@ -1081,7 +1081,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 1.09, z: 0}
 --- !u!114 &8213724037166247520
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1132,7 +1132,7 @@ MonoBehaviour:
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
---- !u!114 &226634151269537317
+--- !u!114 &3975272698542209970
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1141,7 +1141,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4208571194375120221}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26e54e5a728a9234ab24fcf1460ed8a2, type: 3}
+  m_Script: {fileID: 11500000, guid: e68dbf7fa82d3214ab27c10d861296fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   MoveSpeed: 2
