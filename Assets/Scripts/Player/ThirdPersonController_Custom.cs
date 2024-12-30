@@ -15,17 +15,21 @@ namespace Player
     public class ThirdPersonControllerCustom : MonoBehaviour
     {
         [Header("Player")]
-        [Tooltip("Move speed of the character in m/s")] // 캐릭터의 이동 속도 (초당 미터)
+        // 캐릭터의 이동 속도 (초당 미터)
+        [Tooltip("Move speed of the character in m/s")] 
         public float MoveSpeed = 2.0f;
 
-        [Tooltip("Sprint speed of the character in m/s")] // 캐릭터의 스프린트 속도 (초당 미터)
+        // 캐릭터의 스프린트 속도 (초당 미터)
+        [Tooltip("Sprint speed of the character in m/s")] 
         public float SprintSpeed = 5.335f;
 
-        [Tooltip("How fast the character turns to face movement direction")] // 캐릭터가 이동 방향으로 회전하는 속도
+        // 캐릭터가 이동 방향으로 회전하는 속도
+        [Tooltip("How fast the character turns to face movement direction")]
         [Range(0.0f, 0.3f)]
         public float RotationSmoothTime = 0.12f;
 
-        [Tooltip("Acceleration and deceleration")] // 가속 및 감속
+        // 가속 및 감속
+        [Tooltip("Acceleration and deceleration")] 
         public float SpeedChangeRate = 10.0f;
 
         public AudioClip LandingAudioClip; // 착지 소리 클립
@@ -33,46 +37,59 @@ namespace Player
         [Range(0, 1)] public float FootstepAudioVolume = 0.5f; // 발소리 볼륨
 
         [Space(10)]
-        [Tooltip("The height the player can jump")] // 플레이어가 점프할 수 있는 높이
+        [Tooltip("The height the player can jump")] 
+        // 플레이어가 점프할 수 있는 높이
         public float JumpHeight = 1.2f;
 
-        [Tooltip("The character uses its own gravity value. The engine default is -9.81f")] // 캐릭터의 자체 중력 값 (엔진 기본값은 -9.81f)
+        [Tooltip("The character uses its own gravity value. The engine default is -9.81f")] 
+        // 캐릭터의 자체 중력 값 (엔진 기본값은 -9.81f)
         public float Gravity = -15.0f;
 
         [Space(10)]
-        [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")] // 다시 점프하기까지 필요한 시간. 0f로 설정하면 즉시 점프 가능
+        [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")] 
+        // 다시 점프하기까지 필요한 시간. 0f로 설정하면 즉시 점프 가능
         public float JumpTimeout = 0.50f;
 
-        [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")] // 낙하 상태로 진입하기 전 필요한 시간. 계단을 내려갈 때 유용
+        [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")] 
+        // 낙하 상태로 진입하기 전 필요한 시간. 계단을 내려갈 때 유용
         public float FallTimeout = 0.15f;
 
         [Header("Player Grounded")]
-        [Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")] // 캐릭터가 지면에 있는지 여부. CharacterController의 내장 확인 기능과 별개
+        [Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")] 
+        // 캐릭터가 지면에 있는지 여부. CharacterController의 내장 확인 기능과 별개
         public bool Grounded = true;
 
-        [Tooltip("Useful for rough ground")] // 울퉁불퉁한 지면에서 유용
+        [Tooltip("Useful for rough ground")] 
+        // 울퉁불퉁한 지면에서 유용
         public float GroundedOffset = -0.14f;
 
-        [Tooltip("The radius of the grounded check. Should match the radius of the CharacterController")] // 지면 확인의 반경. CharacterController의 반경과 일치해야 함
+        [Tooltip("The radius of the grounded check. Should match the radius of the CharacterController")] 
+        // 지면 확인의 반경. CharacterController의 반경과 일치해야 함
         public float GroundedRadius = 0.28f;
 
-        [Tooltip("What layers the character uses as ground")] // 캐릭터가 지면으로 사용하는 레이어
+        [Tooltip("What layers the character uses as ground")] 
+        // 캐릭터가 지면으로 사용하는 레이어
         public LayerMask GroundLayers;
 
         [Header("Cinemachine")]
-        [Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")] // 시네머신 가상 카메라에서 카메라가 따라갈 타겟
+        [Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")] 
+        // 시네머신 가상 카메라에서 카메라가 따라갈 타겟
         public GameObject CinemachineCameraTarget;
 
-        [Tooltip("How far in degrees can you move the camera up")] // 카메라를 위로 이동할 수 있는 최대 각도
+        [Tooltip("How far in degrees can you move the camera up")] 
+        // 카메라를 위로 이동할 수 있는 최대 각도
         public float TopClamp = 70.0f;
 
-        [Tooltip("How far in degrees can you move the camera down")] // 카메라를 아래로 이동할 수 있는 최대 각도
+        [Tooltip("How far in degrees can you move the camera down")] 
+        // 카메라를 아래로 이동할 수 있는 최대 각도
         public float BottomClamp = -30.0f;
 
-        [Tooltip("Additional degress to override the camera. Useful for fine tuning camera position when locked")] // 카메라를 덮어쓰는 추가 각도. 카메라 위치를 세부 조정할 때 유용
+        [Tooltip("Additional degress to override the camera. Useful for fine tuning camera position when locked")] 
+        // 카메라를 덮어쓰는 추가 각도. 카메라 위치를 세부 조정할 때 유용
         public float CameraAngleOverride = 0.0f;
 
-        [Tooltip("For locking the camera position on all axis")] // 모든 축에서 카메라 위치를 고정
+        [Tooltip("For locking the camera position on all axis")] 
+        // 모든 축에서 카메라 위치를 고정
         public bool LockCameraPosition = false;
 
         // cinemachine
@@ -180,10 +197,8 @@ namespace Player
         {
             // set sphere position, with offset
             // 오프셋과 함께 구체의 위치 설정
-            Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
-                transform.position.z);
-            Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
-                QueryTriggerInteraction.Ignore);
+            Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z);
+            Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
 
             // update animator if using character
             // 캐릭터가 있을 경우 애니메이터 업데이트
@@ -214,8 +229,7 @@ namespace Player
 
             // Cinemachine will follow this target
             // 시네머신이 이 타겟을 따릅니다.
-            CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
-                _cinemachineTargetYaw, 0.0f);
+            CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);
         }
 
                 private void Move()
@@ -249,8 +263,7 @@ namespace Player
                 // 선형이 아닌 곡선형 결과를 만들어 더 자연스러운 속도 변화를 제공
                 // note T in Lerp is clamped, so we don't need to clamp our speed
                 // Lerp의 T 값은 이미 클램핑되므로 속도를 따로 제한할 필요 없음
-                _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
-                    Time.deltaTime * SpeedChangeRate);
+                _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude, Time.deltaTime * SpeedChangeRate);
 
                 // round speed to 3 decimal places
                 // 속도를 소수점 세 자리로 반올림
@@ -274,10 +287,8 @@ namespace Player
             // 이동 입력이 있을 경우 플레이어를 이동 방향으로 회전
             if (_input.move != Vector2.zero)
             {
-                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                                  _mainCamera.transform.eulerAngles.y;
-                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
-                    RotationSmoothTime);
+                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
+                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
 
                 // rotate to face input direction relative to camera position
                 // 카메라 위치를 기준으로 입력 방향을 바라보도록 회전
