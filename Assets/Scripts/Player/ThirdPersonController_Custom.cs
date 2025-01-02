@@ -216,26 +216,45 @@ namespace Player
 
         private void CameraRotation()
         {
-            // if there is an input and camera position is not fixed
-            // 입력이 있고 카메라 위치가 고정되지 않은 경우
+            // 입력값 처리
             if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
             {
-                //Don't multiply mouse input by Time.deltaTime;
-                // 마우스 입력에는 Time.deltaTime을 곱하지 않습니다.
                 float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
-            
+
                 _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
                 _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
             }
-            
-            // clamp our rotations so our values are limited 360 degrees
-            // 회전을 제한하여 값이 360도를 초과하지 않도록 함
+
+            // 각도 제한
             _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
             _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
-            
-            // Cinemachine will follow this target
-            // 시네머신이 이 타겟을 따릅니다.
+
+            // Cinemachine 카메라 타겟 회전
             CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);
+
+            // 캐릭터 Yaw 회전 반영
+            transform.rotation = Quaternion.Euler(0.0f, _cinemachineTargetYaw, 0.0f);
+            
+            // // if there is an input and camera position is not fixed
+            // // 입력이 있고 카메라 위치가 고정되지 않은 경우
+            // if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+            // {
+            //     //Don't multiply mouse input by Time.deltaTime;
+            //     // 마우스 입력에는 Time.deltaTime을 곱하지 않습니다.
+            //     float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
+            //
+            //     _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
+            //     _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
+            // }
+            //
+            // // clamp our rotations so our values are limited 360 degrees
+            // // 회전을 제한하여 값이 360도를 초과하지 않도록 함
+            // _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
+            // _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
+            //
+            // // Cinemachine will follow this target
+            // // 시네머신이 이 타겟을 따릅니다.
+            // CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);
         }
 
         private void Move()
@@ -298,7 +317,7 @@ namespace Player
 
                 // rotate to face input direction relative to camera position
                 // 카메라 위치를 기준으로 입력 방향을 바라보도록 회전
-                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+                // transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
             }
 
             Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
