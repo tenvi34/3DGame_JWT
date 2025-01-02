@@ -9,86 +9,84 @@ using UnityEngine.InputSystem;
 namespace Player
 {
     [RequireComponent(typeof(CharacterController))]
-#if ENABLE_INPUT_SYSTEM 
+#if ENABLE_INPUT_SYSTEM
     [RequireComponent(typeof(PlayerInput))]
 #endif
     public class ThirdPersonControllerCustom : MonoBehaviour
     {
         [Header("Player")]
         // 캐릭터의 이동 속도 (초당 미터)
-        [Tooltip("Move speed of the character in m/s")] 
+        [Tooltip("Move speed of the character in m/s")]
         public float MoveSpeed = 2.0f;
 
         // 캐릭터의 스프린트 속도 (초당 미터)
-        [Tooltip("Sprint speed of the character in m/s")] 
+        [Tooltip("Sprint speed of the character in m/s")]
         public float SprintSpeed = 5.335f;
 
         // 캐릭터가 이동 방향으로 회전하는 속도
-        [Tooltip("How fast the character turns to face movement direction")]
-        [Range(0.0f, 0.3f)]
+        [Tooltip("How fast the character turns to face movement direction")] [Range(0.0f, 0.3f)]
         public float RotationSmoothTime = 0.12f;
 
         // 가속 및 감속
-        [Tooltip("Acceleration and deceleration")] 
+        [Tooltip("Acceleration and deceleration")]
         public float SpeedChangeRate = 10.0f;
 
         public AudioClip LandingAudioClip; // 착지 소리 클립
         public AudioClip[] FootstepAudioClips; // 발소리 클립
         [Range(0, 1)] public float FootstepAudioVolume = 0.5f; // 발소리 볼륨
 
-        [Space(10)]
-        [Tooltip("The height the player can jump")] 
+        [Space(10)] [Tooltip("The height the player can jump")]
         // 플레이어가 점프할 수 있는 높이
         public float JumpHeight = 1.2f;
 
-        [Tooltip("The character uses its own gravity value. The engine default is -9.81f")] 
+        [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
         // 캐릭터의 자체 중력 값 (엔진 기본값은 -9.81f)
         public float Gravity = -15.0f;
 
         [Space(10)]
-        [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")] 
+        [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
         // 다시 점프하기까지 필요한 시간. 0f로 설정하면 즉시 점프 가능
         public float JumpTimeout = 0.50f;
 
-        [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")] 
+        [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
         // 낙하 상태로 진입하기 전 필요한 시간. 계단을 내려갈 때 유용
         public float FallTimeout = 0.15f;
 
         [Header("Player Grounded")]
-        [Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")] 
+        [Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")]
         // 캐릭터가 지면에 있는지 여부. CharacterController의 내장 확인 기능과 별개
         public bool Grounded = true;
 
-        [Tooltip("Useful for rough ground")] 
+        [Tooltip("Useful for rough ground")]
         // 울퉁불퉁한 지면에서 유용
         public float GroundedOffset = -0.14f;
 
-        [Tooltip("The radius of the grounded check. Should match the radius of the CharacterController")] 
+        [Tooltip("The radius of the grounded check. Should match the radius of the CharacterController")]
         // 지면 확인의 반경. CharacterController의 반경과 일치해야 함
         public float GroundedRadius = 0.28f;
 
-        [Tooltip("What layers the character uses as ground")] 
+        [Tooltip("What layers the character uses as ground")]
         // 캐릭터가 지면으로 사용하는 레이어
         public LayerMask GroundLayers;
 
         [Header("Cinemachine")]
-        [Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")] 
+        [Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
         // 시네머신 가상 카메라에서 카메라가 따라갈 타겟
         public GameObject CinemachineCameraTarget;
 
-        [Tooltip("How far in degrees can you move the camera up")] 
+        [Tooltip("How far in degrees can you move the camera up")]
         // 카메라를 위로 이동할 수 있는 최대 각도
         public float TopClamp = 70.0f;
 
-        [Tooltip("How far in degrees can you move the camera down")] 
+        [Tooltip("How far in degrees can you move the camera down")]
         // 카메라를 아래로 이동할 수 있는 최대 각도
         public float BottomClamp = -30.0f;
 
-        [Tooltip("Additional degress to override the camera. Useful for fine tuning camera position when locked")] 
+        [Tooltip("Additional degress to override the camera. Useful for fine tuning camera position when locked")]
         // 카메라를 덮어쓰는 추가 각도. 카메라 위치를 세부 조정할 때 유용
         public float CameraAngleOverride = 0.0f;
 
-        [Tooltip("For locking the camera position on all axis")] 
+        [Tooltip("For locking the camera position on all axis")]
         // 모든 축에서 카메라 위치를 고정
         public bool LockCameraPosition = false;
 
@@ -103,6 +101,7 @@ namespace Player
         private float _rotationVelocity;
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
+        private bool _isAiming;
 
         // timeout deltatime
         private float _jumpTimeoutDelta;
@@ -115,7 +114,7 @@ namespace Player
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
 
-#if ENABLE_INPUT_SYSTEM 
+#if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
 #endif
         private Animator _animator;
@@ -152,11 +151,11 @@ namespace Player
         private void Start()
         {
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-            
+
             _hasAnimator = TryGetComponent(out _animator); // 애니메이터가 있는지 확인
             _controller = GetComponent<CharacterController>(); // CharacterController 컴포넌트 가져오기
             _input = GetComponent<StarterAssetsInputs>(); // 입력 컴포넌트 가져오기
-#if ENABLE_INPUT_SYSTEM 
+#if ENABLE_INPUT_SYSTEM
             _playerInput = GetComponent<PlayerInput>();
 #else
 			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
@@ -175,8 +174,8 @@ namespace Player
             _hasAnimator = TryGetComponent(out _animator);
 
             JumpAndGravity(); // 점프 및 중력 처리
-            GroundedCheck();  // 지면 상태 확인
-            Move();           // 캐릭터 이동
+            GroundedCheck(); // 지면 상태 확인
+            Move(); // 캐릭터 이동
         }
 
         private void LateUpdate()
@@ -232,7 +231,7 @@ namespace Player
             CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);
         }
 
-                private void Move()
+        private void Move()
         {
             // set target speed based on move speed, sprint speed and if sprint is pressed
             // 이동 속도, 스프린트 속도, 그리고 스프린트 입력 여부에 따라 목표 속도를 설정합니다.
@@ -423,7 +422,8 @@ namespace Player
                 if (FootstepAudioClips.Length > 0)
                 {
                     var index = Random.Range(0, FootstepAudioClips.Length); // 랜덤 발소리 선택
-                    AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(_controller.center), FootstepAudioVolume);
+                    AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(_controller.center),
+                        FootstepAudioVolume);
                 }
             }
         }
@@ -433,7 +433,8 @@ namespace Player
             // 애니메이션 이벤트를 통해 착지 소리 재생
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
-                AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
+                AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center),
+                    FootstepAudioVolume);
             }
         }
     }
