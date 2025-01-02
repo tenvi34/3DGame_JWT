@@ -1,3 +1,4 @@
+using Cinemachine;
 using StarterAssets;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -176,6 +177,7 @@ namespace Player
             JumpAndGravity(); // 점프 및 중력 처리
             GroundedCheck(); // 지면 상태 확인
             Move(); // 캐릭터 이동
+            // HandleAim(); // 견착 상태
         }
 
         private void LateUpdate()
@@ -206,6 +208,11 @@ namespace Player
                 _animator.SetBool(_animIDGrounded, Grounded);
             }
         }
+        
+        private void HandleAim()
+        {
+            
+        }
 
         private void CameraRotation()
         {
@@ -216,16 +223,16 @@ namespace Player
                 //Don't multiply mouse input by Time.deltaTime;
                 // 마우스 입력에는 Time.deltaTime을 곱하지 않습니다.
                 float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
-
+            
                 _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
                 _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
             }
-
+            
             // clamp our rotations so our values are limited 360 degrees
             // 회전을 제한하여 값이 360도를 초과하지 않도록 함
             _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
             _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
-
+            
             // Cinemachine will follow this target
             // 시네머신이 이 타겟을 따릅니다.
             CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);

@@ -874,7 +874,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5199814288636730160}
   m_Layer: 7
-  m_Name: CameraRoot
+  m_Name: PlayerCameraRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1129,6 +1129,7 @@ MonoBehaviour:
   look: {x: 0, y: 0}
   jump: 0
   sprint: 0
+  aim: 0
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
