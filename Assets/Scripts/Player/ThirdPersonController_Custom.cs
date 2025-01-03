@@ -281,8 +281,8 @@ namespace Player
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
                 
                 // Direction 값 업데이트 (좌우 이동 감지)
-                float direction = _input.move.x; // A: -1, D: 1
-                _animator.SetFloat(_animIDDirection, direction);
+                // float direction = _input.move.x; // A: -1, D: 1
+                // _animator.SetFloat(_animIDDirection, direction);
             }
         }
 
