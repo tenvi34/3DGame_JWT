@@ -216,8 +216,8 @@ namespace Player
                 _cinemachineTargetYaw, 0.0f);
 
             // 캐릭터 회전 동기화
-            float characterYaw = _cinemachineTargetYaw;
-            transform.rotation = Quaternion.Euler(0.0f, characterYaw, 0.0f);
+            // float characterYaw = _cinemachineTargetYaw;
+            // transform.rotation = Quaternion.Euler(0.0f, characterYaw, 0.0f);
         }
 
         // 캐릭터 이동 처리
@@ -281,10 +281,6 @@ namespace Player
             {
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
-                
-                // Direction 값 업데이트 (좌우 이동 감지)
-                // float direction = _input.move.x; // A: -1, D: 1
-                // _animator.SetFloat(_animIDDirection, direction);
             }
         }
 
