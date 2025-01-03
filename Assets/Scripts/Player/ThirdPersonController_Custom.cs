@@ -30,8 +30,7 @@ namespace Player
 
         public AudioClip LandingAudioClip;
         public AudioClip[] FootstepAudioClips;
-        [Range(0, 1)] 
-        public float FootstepAudioVolume = 0.5f;
+        [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
 
         [Space(10)] 
         [Tooltip("플레이어가 점프할 수 있는 높이")]
@@ -96,6 +95,7 @@ namespace Player
         private int _animIDJump;
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
+        private int _animIDDirection;
 
 #if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
@@ -165,6 +165,7 @@ namespace Player
             CameraRotation(); // 카메라 회전 처리
         }
 
+        // 애니메이션 파라미터의 해시 값을 초기화
         private void AssignAnimationIDs()
         {
             _animIDSpeed = Animator.StringToHash("Speed");
@@ -172,8 +173,10 @@ namespace Player
             _animIDJump = Animator.StringToHash("Jump");
             _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+            _animIDDirection = Animator.StringToHash("Direction");
         }
 
+        // 캐릭터가 지면에 닿아 있는지 확인하고 애니메이터를 업데이트
         private void GroundedCheck()
         {
             // 오프셋을 가진 구체 위치 설정
@@ -189,6 +192,7 @@ namespace Player
             }
         }
 
+        // 카메라 회전 처리
         private void CameraRotation()
         {
             // 입력이 있고 카메라 위치가 고정되지 않은 경우
@@ -206,9 +210,15 @@ namespace Player
             _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
 
             // 시네머신이 이 타겟을 따라감
-            CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);
+            CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
+                _cinemachineTargetYaw, 0.0f);
+
+            // 캐릭터 회전 동기화
+            float characterYaw = _cinemachineTargetYaw;
+            transform.rotation = Quaternion.Euler(0.0f, characterYaw, 0.0f);
         }
 
+        // 캐릭터 이동 처리
         private void Move()
         {
             // 이동 속도, 스프린트 속도, 스프린트 입력에 따라 목표 속도 설정
@@ -264,14 +274,19 @@ namespace Player
             // 플레이어 이동
             _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
-            // 캐릭터가 있을 경우 애니메이터 업데이트
+            // 애니메이터 업데이트
             if (_hasAnimator)
             {
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+                
+                // Direction 값 업데이트 (좌우 이동 감지)
+                float direction = _input.move.x; // A: -1, D: 1
+                _animator.SetFloat(_animIDDirection, direction);
             }
         }
 
+        // 점프 및 중력 처리
         private void JumpAndGravity()
         {
             if (Grounded)
@@ -342,6 +357,7 @@ namespace Player
             }
         }
 
+        // 각도를 최소 및 최대 값으로 제한
         private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
         {
             // 각도가 -360° 미만이거나 360° 초과하는 경우 정규화
@@ -352,6 +368,7 @@ namespace Player
             return Mathf.Clamp(lfAngle, lfMin, lfMax);
         }
 
+        // 캐릭터가 지면에 닿아 있는지 확인하는 구체 그리기
         private void OnDrawGizmosSelected()
         {
             // 투명한 초록색과 빨간색 색상 정의
@@ -364,9 +381,11 @@ namespace Player
 
             // 선택되었을 때, Grounded 확인 구체와 동일한 위치 및 반지름으로 Gizmo 그리기
             Gizmos.DrawSphere(
-                new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z), GroundedRadius);
+                new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z),
+                GroundedRadius);
         }
 
+        // 애니메이션 이벤트를 통해 발소리 재생
         private void OnFootstep(AnimationEvent animationEvent)
         {
             // 애니메이션 이벤트의 클립 가중치가 0.5 초과인 경우
@@ -379,18 +398,21 @@ namespace Player
                     var index = Random.Range(0, FootstepAudioClips.Length);
 
                     // 클립을 현재 캐릭터 위치에서 재생
-                    AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(_controller.center), FootstepAudioVolume);
+                    AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(_controller.center),
+                        FootstepAudioVolume);
                 }
             }
         }
 
+        // 애니메이션 이벤트를 통해 착지 소리 재생
         private void OnLand(AnimationEvent animationEvent)
         {
             // 애니메이션 이벤트의 클립 가중치가 0.5 초과인 경우
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
                 // 착지 효과음을 현재 캐릭터 위치에서 재생
-                AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
+                AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center),
+                    FootstepAudioVolume);
             }
         }
     }
