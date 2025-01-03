@@ -95,7 +95,8 @@ namespace Player
         private int _animIDJump;
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
-        private int _animIDDirection;
+        private int _animIDDirectionX;
+        private int _animIDDirectionY;
 
 #if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
@@ -173,7 +174,8 @@ namespace Player
             _animIDJump = Animator.StringToHash("Jump");
             _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
-            _animIDDirection = Animator.StringToHash("Direction");
+            _animIDDirectionX = Animator.StringToHash("DirX");
+            _animIDDirectionY = Animator.StringToHash("DirY");
         }
 
         // 캐릭터가 지면에 닿아 있는지 확인하고 애니메이터를 업데이트
@@ -223,18 +225,18 @@ namespace Player
         {
             // 이동 속도, 스프린트 속도, 스프린트 입력에 따라 목표 속도 설정
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
-
+            
             // 간단한 가속 및 감속 설계
             // 참고: Vector2의 == 연산자는 근사치를 사용하므로 부동소수점 오류에 민감하지 않으며, magnitude보다 효율적임
             // 입력이 없을 경우 목표 속도를 0으로 설정
             if (_input.move == Vector2.zero) targetSpeed = 0.0f;
-
+            
             // 플레이어의 현재 수평 속도 참조
             float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
-
+            
             float speedOffset = 0.1f;
             float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
-
+            
             // 목표 속도까지 가속 또는 감속
             if (currentHorizontalSpeed < targetSpeed - speedOffset ||
                 currentHorizontalSpeed > targetSpeed + speedOffset)
@@ -242,7 +244,7 @@ namespace Player
                 // 선형 대신 곡선을 생성하여 유기적인 속도 변화를 제공
                 // Lerp의 T는 클램프되므로 속도를 제한할 필요 없음
                 _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude, Time.deltaTime * SpeedChangeRate);
-
+            
                 // 속도를 소수점 3자리로 반올림
                 _speed = Mathf.Round(_speed * 1000f) / 1000f;
             }
@@ -250,13 +252,13 @@ namespace Player
             {
                 _speed = targetSpeed;
             }
-
+            
             _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
             if (_animationBlend < 0.01f) _animationBlend = 0f;
-
+            
             // 입력 방향 정규화
             Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
-
+            
             // 참고: Vector2의 != 연산자는 근사치를 사용하여 부동소수점 오류에 민감하지 않음
             // 이동 입력이 있을 경우 플레이어를 입력 방향으로 회전
             if (_input.move != Vector2.zero)
@@ -264,16 +266,16 @@ namespace Player
                 _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
                                   _mainCamera.transform.eulerAngles.y;
                 float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
-
+            
                 // 카메라를 기준으로 입력 방향을 바라보도록 회전
                 transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
             }
-
+            
             Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-
+            
             // 플레이어 이동
             _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
-
+            
             // 애니메이터 업데이트
             if (_hasAnimator)
             {
