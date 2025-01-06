@@ -14,7 +14,7 @@ namespace Player
 #if ENABLE_INPUT_SYSTEM
     [RequireComponent(typeof(PlayerInput))]
 #endif
-    public class ThirdPersonControllerCustom : MonoBehaviour
+    public class PlayerController : MonoBehaviour
     {
         [Header("Player")] 
         [Tooltip("캐릭터의 이동 속도 (초당 m/s)")]
