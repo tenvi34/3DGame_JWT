@@ -1250,6 +1250,8 @@ MonoBehaviour:
   fireMode: 0
   bulletPos: {fileID: 1578058179}
   bullet: {fileID: 356878711729843165, guid: 9133d434d61a1554b84de65600db5d1c, type: 3}
+  maxAmmo: 30
+  curAmmo: 30
 --- !u!1 &1764214107
 GameObject:
   m_ObjectHideFlags: 0

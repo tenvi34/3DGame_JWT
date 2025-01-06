@@ -29,6 +29,8 @@ namespace Weapon
         // 총알
         public Transform bulletPos;
         public GameObject bullet;
+        public int maxAmmo;
+        public int curAmmo;
 
         // 관련 변수
         private bool _isShooting = false;
@@ -57,18 +59,22 @@ namespace Weapon
 
         private void HandleAssaultRifle()
         {
-            switch (fireMode)
+            if (curAmmo > 0)
             {
-                case FireMode.Single:
-                    StartCoroutine(SingleShot());
-                    break;
-                case FireMode.Burst:
-                    StartCoroutine(BurstShot());
-                    break;
-                case FireMode.Auto:
-                    if (!_isShooting)
-                        StartCoroutine(AutoShot());
-                    break;
+                switch (fireMode)
+                {
+                    case FireMode.Single:
+                        curAmmo--;
+                        StartCoroutine(SingleShot());
+                        break;
+                    case FireMode.Burst:
+                        StartCoroutine(BurstShot());
+                        break;
+                    case FireMode.Auto:
+                        if (!_isShooting)
+                            StartCoroutine(AutoShot());
+                        break;
+                }
             }
         }
 

@@ -89,6 +89,7 @@ namespace Player
         
         // 무기 관련
         private bool _isShooting = false;
+        private bool _isReload;
 
         // 타임아웃 관련
         private float _jumpTimeoutDelta;
@@ -102,6 +103,7 @@ namespace Player
         private int _animIDMotionSpeed;
         private int _animIDAiming;
         private int _animIDShot;
+        private int _animIDReload;
 
 #if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
@@ -169,6 +171,7 @@ namespace Player
             GroundedCheck(); // 지면 확인
             Move(); // 이동 처리
             Attack(); // 공격
+            Reload(); // 장전
         }
 
         private void LateUpdate()
@@ -186,6 +189,7 @@ namespace Player
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
             _animIDAiming = Animator.StringToHash("IsAiming");
             _animIDShot = Animator.StringToHash("DoShot");
+            _animIDReload = Animator.StringToHash("DoReload");
         }
 
         // 캐릭터가 지면에 닿아 있는지 확인하고 애니메이터를 업데이트
@@ -451,6 +455,24 @@ namespace Player
                 // 일정 시간이 지나야 사격 가능으로 변경
                 StartCoroutine(ResetShoot());
             }
+        }
+        
+        // 장전
+        private void Reload()
+        {
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                _animator.SetTrigger(_animIDReload);
+                _isReload = true;
+                
+                Invoke(nameof(ReloadOut), 0.5f);
+            }
+        }
+
+        private void ReloadOut()
+        {
+            _weaponController.curAmmo = _weaponController.maxAmmo;
+            _isReload = false;
         }
 
         private IEnumerator ResetShoot()
