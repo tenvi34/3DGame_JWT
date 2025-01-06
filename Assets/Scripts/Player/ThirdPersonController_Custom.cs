@@ -1,5 +1,6 @@
 using StarterAssets;
 using UnityEngine;
+using Weapon;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -96,6 +97,7 @@ namespace Player
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
         private int _animIDAiming;
+        private int _animIDShot;
 
 #if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
@@ -105,7 +107,8 @@ namespace Player
         private AimController _aimController;
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
-
+        private WeaponController _weaponController;
+    
         private const float _threshold = 0.01f;
 
         private bool _hasAnimator;
@@ -138,6 +141,7 @@ namespace Player
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _aimController = GetComponent<AimController>();
+            _weaponController = GetComponentInChildren<WeaponController>();
             _input = GetComponent<StarterAssetsInputs>();
 #if ENABLE_INPUT_SYSTEM
             _playerInput = GetComponent<PlayerInput>();
@@ -160,6 +164,7 @@ namespace Player
             JumpAndGravity(); // 점프 및 중력 처리
             GroundedCheck(); // 지면 확인
             Move(); // 이동 처리
+            Attack(); // 공격
         }
 
         private void LateUpdate()
@@ -176,6 +181,7 @@ namespace Player
             _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
             _animIDAiming = Animator.StringToHash("IsAiming");
+            _animIDShot = Animator.StringToHash("DoShot");
         }
 
         // 캐릭터가 지면에 닿아 있는지 확인하고 애니메이터를 업데이트
@@ -426,6 +432,16 @@ namespace Player
                 // 착지 효과음을 현재 캐릭터 위치에서 재생
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center),
                     FootstepAudioVolume);
+            }
+        }
+
+        // 공격
+        private void Attack()
+        {
+            if (Input.GetMouseButton(0))
+            {
+                _weaponController.Use();
+                _animator.SetTrigger(_animIDShot);
             }
         }
     }
