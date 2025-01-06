@@ -1,3 +1,4 @@
+using System.Collections;
 using StarterAssets;
 using UnityEngine;
 using Weapon;
@@ -85,6 +86,9 @@ namespace Player
         private float _rotationVelocity;
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
+        
+        // 무기 관련
+        private bool _isShooting = false;
 
         // 타임아웃 관련
         private float _jumpTimeoutDelta;
@@ -438,11 +442,22 @@ namespace Player
         // 공격
         private void Attack()
         {
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButton(0) && !_isShooting)
             {
+                _isShooting = true;
                 _weaponController.Use();
                 _animator.SetTrigger(_animIDShot);
+                
+                // 일정 시간이 지나야 사격 가능으로 변경
+                StartCoroutine(ResetShoot());
             }
+        }
+
+        private IEnumerator ResetShoot()
+        {
+            yield return new WaitForSeconds(0.5f);
+            _isShooting = false;
+            _animator.ResetTrigger(_animIDShot);
         }
     }
 }

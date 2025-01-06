@@ -218,4 +218,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 7
-  destroyDelay: 0
+  destroyDelay: 1
