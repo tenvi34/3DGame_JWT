@@ -95,14 +95,14 @@ namespace Player
         private int _animIDJump;
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
-        private int _animIDDirectionX;
-        private int _animIDDirectionY;
+        private int _animIDAiming;
 
 #if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
 #endif
         private Animator _animator;
         private CharacterController _controller;
+        private AimController _aimController;
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
 
@@ -137,6 +137,7 @@ namespace Player
 
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
+            _aimController = GetComponent<AimController>();
             _input = GetComponent<StarterAssetsInputs>();
 #if ENABLE_INPUT_SYSTEM
             _playerInput = GetComponent<PlayerInput>();
@@ -174,8 +175,7 @@ namespace Player
             _animIDJump = Animator.StringToHash("Jump");
             _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
-            _animIDDirectionX = Animator.StringToHash("DirX");
-            _animIDDirectionY = Animator.StringToHash("DirY");
+            _animIDAiming = Animator.StringToHash("IsAiming");
         }
 
         // 캐릭터가 지면에 닿아 있는지 확인하고 애니메이터를 업데이트
@@ -212,12 +212,17 @@ namespace Player
             _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
 
             // 시네머신이 이 타겟을 따라감
-            CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
-                _cinemachineTargetYaw, 0.0f);
+            CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);
 
-            // 캐릭터 회전 동기화
-            // float characterYaw = _cinemachineTargetYaw;
-            // transform.rotation = Quaternion.Euler(0.0f, characterYaw, 0.0f);
+            // 견착 상태에서 캐릭터 회전 동기화
+            if (_aimController.CheckAiming)
+            {
+                // float characterYaw = _cinemachineTargetYaw;
+                // transform.rotation = Quaternion.Euler(0.0f, characterYaw, 0.0f);
+                // transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0.0f, characterYaw, 0.0f), Time.deltaTime * 10.0f);
+                // float cameraYaw = _cinemachineTargetYaw; // 카메라의 Yaw 값 가져오기
+                // transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0.0f, cameraYaw, 0.0f), Time.deltaTime * 10.0f);
+            }
         }
 
         // 캐릭터 이동 처리
@@ -261,14 +266,16 @@ namespace Player
             
             // 참고: Vector2의 != 연산자는 근사치를 사용하여 부동소수점 오류에 민감하지 않음
             // 이동 입력이 있을 경우 플레이어를 입력 방향으로 회전
-            if (_input.move != Vector2.zero)
+            if (!_aimController.CheckAiming)
             {
-                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                                  _mainCamera.transform.eulerAngles.y;
-                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
+                if (_input.move != Vector2.zero)
+                {
+                    _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
+                    float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
             
-                // 카메라를 기준으로 입력 방향을 바라보도록 회전
-                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+                    // 카메라를 기준으로 입력 방향을 바라보도록 회전
+                    transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+                }
             }
             
             Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
@@ -276,11 +283,19 @@ namespace Player
             // 플레이어 이동
             _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
             
+            if (_input.sprint && _aimController != null && _aimController.CheckAiming)
+            {
+                _aimController.CancelAiming(); // 견착 해제
+            }
+            
             // 애니메이터 업데이트
             if (_hasAnimator)
             {
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+                
+                // 견착 상태
+                _animator.SetBool(_animIDAiming, _input.aim && Input.GetMouseButton(1));
             }
         }
 

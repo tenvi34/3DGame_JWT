@@ -255,7 +255,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 1
-  m_FollowOffset: {x: 1, y: 0, z: -0.2}
+  m_FollowOffset: {x: 1.5, y: 0, z: -1}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -653,8 +653,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 823707283}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.15086412, y: 0.00000019513975, z: 0.000000029780443, w: 0.98855454}
-  m_LocalPosition: {x: 1.7057285, y: 1.6500002, z: 0.46253186}
+  m_LocalRotation: {x: -0.12104675, y: -0.06167877, z: -0.0075360993, w: 0.9907001}
+  m_LocalPosition: {x: 2.2057285, y: 1.6500002, z: -0.33746815}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1207,6 +1207,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   thirdPersonCamera: {fileID: 1554682012}
   shoulderAimCamera: {fileID: 823707284}
+  rotationSpeed: 5
+  minPitch: -30
+  maxPitch: 60
 --- !u!1001 &1979352518
 PrefabInstance:
   m_ObjectHideFlags: 0
