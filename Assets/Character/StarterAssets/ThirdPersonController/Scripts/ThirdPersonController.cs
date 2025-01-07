@@ -114,6 +114,7 @@ namespace StarterAssets
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
         private WeaponController _weaponController;
+        private bool _rotateOnMove = true;
     
         private const float _threshold = 0.01f;
 
@@ -276,7 +277,10 @@ namespace StarterAssets
                     RotationSmoothTime);
                 
                 // 카메라를 기준으로 입력 방향을 바라보도록 회전
-                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+                if (_rotateOnMove)
+                {
+                    transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+                }
             }
             
             Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
@@ -473,6 +477,12 @@ namespace StarterAssets
         public void SetSensitivity(float newSensitivity)
         {
             Sensitivity = newSensitivity;
+        }
+        
+        // 회전 설정
+        public void SetRotateOnMove(bool newRotateOnMove)
+        {
+            _rotateOnMove = newRotateOnMove;
         }
     }
 }
