@@ -29,6 +29,7 @@ namespace Player
 
         [Tooltip("가속 및 감속")] 
         public float SpeedChangeRate = 10.0f;
+        public float Sensitivity = 1.0f;
 
         public AudioClip LandingAudioClip;
         public AudioClip[] FootstepAudioClips;
@@ -110,7 +111,6 @@ namespace Player
 #endif
         private Animator _animator;
         private CharacterController _controller;
-        private AimController _aimController;
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
         private WeaponController _weaponController;
@@ -146,7 +146,6 @@ namespace Player
 
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
-            _aimController = GetComponent<AimController>();
             _weaponController = GetComponentInChildren<WeaponController>();
             _input = GetComponent<StarterAssetsInputs>();
 #if ENABLE_INPUT_SYSTEM
@@ -196,10 +195,8 @@ namespace Player
         private void GroundedCheck()
         {
             // 오프셋을 가진 구체 위치 설정
-            Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
-                transform.position.z);
-            Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
-                QueryTriggerInteraction.Ignore);
+            Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z);
+            Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
 
             // 캐릭터가 있을 경우 애니메이터 업데이트
             if (_hasAnimator)
@@ -216,27 +213,17 @@ namespace Player
             {
                 // 마우스 입력에 Time.deltaTime을 곱하지 않음
                 float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
-
-                _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
-                _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
+            
+                _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier * Sensitivity;
+                _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier * Sensitivity;
             }
-
+            
             // 360도로 제한
             _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
             _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
-
+            
             // 시네머신이 이 타겟을 따라감
             CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);
-
-            // 견착 상태에서 캐릭터 회전 동기화
-            if (_aimController.CheckAiming)
-            {
-                // float characterYaw = _cinemachineTargetYaw;
-                // transform.rotation = Quaternion.Euler(0.0f, characterYaw, 0.0f);
-                // transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0.0f, characterYaw, 0.0f), Time.deltaTime * 10.0f);
-                // float cameraYaw = _cinemachineTargetYaw; // 카메라의 Yaw 값 가져오기
-                // transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0.0f, cameraYaw, 0.0f), Time.deltaTime * 10.0f);
-            }
         }
 
         // 캐릭터 이동 처리
@@ -280,16 +267,16 @@ namespace Player
             
             // 참고: Vector2의 != 연산자는 근사치를 사용하여 부동소수점 오류에 민감하지 않음
             // 이동 입력이 있을 경우 플레이어를 입력 방향으로 회전
-            if (!_aimController.CheckAiming)
-            {
-                if (_input.move != Vector2.zero)
-                {
-                    _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
-                    float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
             
-                    // 카메라를 기준으로 입력 방향을 바라보도록 회전
-                    transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
-                }
+            if (_input.move != Vector2.zero)
+            {
+                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+                                  _mainCamera.transform.eulerAngles.y;
+                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
+                    RotationSmoothTime);
+                
+                // 카메라를 기준으로 입력 방향을 바라보도록 회전
+                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
             }
             
             Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
@@ -297,10 +284,10 @@ namespace Player
             // 플레이어 이동
             _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
             
-            if (_input.sprint && _aimController != null && _aimController.CheckAiming)
-            {
-                _aimController.CancelAiming(); // 견착 해제
-            }
+            // if (_input.sprint && _aimController != null && _aimController.CheckAiming)
+            // {
+            //     _aimController.CancelAiming(); // 견착 해제
+            // }
             
             // 애니메이터 업데이트
             if (_hasAnimator)
@@ -309,7 +296,7 @@ namespace Player
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
                 
                 // 견착 상태
-                _animator.SetBool(_animIDAiming, _input.aim && Input.GetMouseButton(1));
+                // _animator.SetBool(_animIDAiming, _input.aim && Input.GetMouseButton(1));
             }
         }
 
@@ -468,18 +455,24 @@ namespace Player
                 Invoke(nameof(ReloadOut), 0.5f);
             }
         }
-
+        
         private void ReloadOut()
         {
             _weaponController.curAmmo = _weaponController.maxAmmo;
             _isReload = false;
         }
-
+        
         private IEnumerator ResetShoot()
         {
             yield return new WaitForSeconds(0.5f);
             _isShooting = false;
             _animator.ResetTrigger(_animIDShot);
+        }
+
+        // 감도 설정
+        public void SetSensitivity(float newSensitivity)
+        {
+            Sensitivity = newSensitivity;
         }
     }
 }

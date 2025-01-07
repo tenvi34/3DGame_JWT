@@ -3569,6 +3569,8 @@ GameObject:
   - component: {fileID: 1658305554481408114}
   - component: {fileID: 3361115420479608644}
   - component: {fileID: 3614480741192298842}
+  - component: {fileID: 7934682929356705426}
+  - component: {fileID: 5531254877620364542}
   m_Layer: 7
   m_Name: Player_AssaultRifle01
   m_TagString: Player
@@ -3672,7 +3674,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 4419d82f33d36e848b3ed5af4c8da37e,
+  m_Actions: {fileID: -944628639613478452, guid: ca019a22baaf6304aa661554a81a6915,
     type: 3}
   m_NotificationBehavior: 0
   m_UIInputModule: {fileID: 0}
@@ -3718,15 +3720,51 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1684166029043832}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e68dbf7fa82d3214ab27c10d861296fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MoveSpeed: 2
+  SprintSpeed: 5.5
+  RotationSmoothTime: 0.12
+  SpeedChangeRate: 10
+  Sensitivity: 1
+  LandingAudioClip: {fileID: 0}
+  FootstepAudioClips: []
+  FootstepAudioVolume: 0.5
+  JumpHeight: 1.2
+  Gravity: -15
+  JumpTimeout: 0.5
+  FallTimeout: 0.15
+  Grounded: 1
+  GroundedOffset: -0.14
+  GroundedRadius: 0.28
+  GroundLayers:
+    serializedVersion: 2
+    m_Bits: 1
+  CinemachineCameraTarget: {fileID: 6620672703175606775}
+  TopClamp: 70
+  BottomClamp: -30
+  CameraAngleOverride: 0
+  LockCameraPosition: 1
+--- !u!114 &7934682929356705426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1684166029043832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26e54e5a728a9234ab24fcf1460ed8a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   MoveSpeed: 2
   SprintSpeed: 5.335
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
+  Sensitivity: 1
   LandingAudioClip: {fileID: 0}
   FootstepAudioClips: []
   FootstepAudioVolume: 0.5
@@ -3745,6 +3783,25 @@ MonoBehaviour:
   BottomClamp: -30
   CameraAngleOverride: 0
   LockCameraPosition: 0
+--- !u!114 &5531254877620364542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1684166029043832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 407c3eafc1b34b9fa7cf1b89d0456f74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _aimVirtualCamera: {fileID: 0}
+  normalSensitivity: 1
+  aimSensitivity: 0.5
+  aimColliderLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  debugTransform: {fileID: 727013362334546615}
 --- !u!1 &1717741747019804
 GameObject:
   m_ObjectHideFlags: 0
@@ -4627,6 +4684,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4868164247466224}
   - component: {fileID: 137939509330510438}
+  - component: {fileID: 4661955317290338773}
   m_Layer: 7
   m_Name: AssaultRifle
   m_TagString: Untagged
@@ -4646,7 +4704,8 @@ Transform:
   m_LocalPosition: {x: -118.131454, y: -98.01, z: -57.969975}
   m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 5142651966158863528}
   m_Father: {fileID: 4592669279566048}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!137 &137939509330510438
@@ -4759,6 +4818,24 @@ SkinnedMeshRenderer:
     m_Center: {x: -24.761269, y: -35.822716, z: -10.868752}
     m_Extent: {x: 95.06205, y: 36.50721, z: 92.17865}
   m_DirtyAABB: 0
+--- !u!114 &4661955317290338773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1939457227555564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 999f7dcb4de74843af1ccee7eefa83e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponType: 0
+  fireMode: 0
+  bulletPos: {fileID: 5142651966158863528}
+  bullet: {fileID: 356878711729843165, guid: 9133d434d61a1554b84de65600db5d1c, type: 3}
+  maxAmmo: 30
+  curAmmo: 30
 --- !u!1 &1973982719328658
 GameObject:
   m_ObjectHideFlags: 0
@@ -4852,6 +4929,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4409272713787554}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1161010811687509153
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5142651966158863528}
+  m_Layer: 7
+  m_Name: BulletPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5142651966158863528
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1161010811687509153}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 11839.8, y: 9955.7, z: 5955.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4868164247466224}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6620672703175606775
 GameObject:

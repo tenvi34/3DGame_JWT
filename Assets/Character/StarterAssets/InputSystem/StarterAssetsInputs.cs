@@ -47,7 +47,7 @@ namespace StarterAssets
 		
 		public void OnAim(InputValue value)
 		{
-			aim = value.isPressed;
+			AimInput(value.isPressed);
 		}
 #endif
 
