@@ -300,7 +300,7 @@ namespace StarterAssets
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
                 
                 // 견착 상태
-                // _animator.SetBool(_animIDAiming, _input.aim && Input.GetMouseButton(1));
+                _animator.SetBool(_animIDAiming, _input.aim && Input.GetMouseButton(1));
             }
         }
 
