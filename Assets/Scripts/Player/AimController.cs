@@ -18,11 +18,16 @@ namespace Player
         
         private StarterAssetsInputs _starterAssetsInputs;
         private ThirdPersonController _playerController;
+        private Animator _animator;
+        
+        // 애니메이터
+        private static readonly int DoShoot = Animator.StringToHash("DoShoot");
 
         private void Awake()
         {
             _starterAssetsInputs = GetComponent<StarterAssetsInputs>();
             _playerController = GetComponent<ThirdPersonController>();
+            _animator = GetComponent<Animator>();
         }
 
         private void Update()
@@ -45,6 +50,7 @@ namespace Player
                 _aimVirtualCamera.gameObject.SetActive(true);
                 _playerController.SetSensitivity(aimSensitivity);
                 _playerController.SetRotateOnMove(false);
+                _starterAssetsInputs.sprint = false;
 
                 // 조준점의 위치를 기준으로 캐릭터가 해당 방향을 부드럽게 바라보도록 설정
                 Vector3 worldAimTarget = mouseWorldPosition;
@@ -66,6 +72,7 @@ namespace Player
                 _starterAssetsInputs.sprint = false;
                 Vector3 aimDir = (mouseWorldPosition - bulletSpawnPoint.position).normalized;
                 Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.LookRotation(aimDir, Vector3.up));
+                _animator.SetTrigger(DoShoot);
                 _starterAssetsInputs.shoot = false;
             }
             else
