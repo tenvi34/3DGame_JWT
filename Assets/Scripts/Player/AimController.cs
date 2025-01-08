@@ -2,6 +2,7 @@
 using StarterAssets;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Weapon;
 
 namespace Player
 {
@@ -60,10 +61,15 @@ namespace Player
                 _playerController.SetRotateOnMove(true);
             }
 
-            if (_starterAssetsInputs.shoot)
+            if (_starterAssetsInputs.shoot && _starterAssetsInputs.aim) // 조준 상태에서만 발사 가능
             {
+                _starterAssetsInputs.sprint = false;
                 Vector3 aimDir = (mouseWorldPosition - bulletSpawnPoint.position).normalized;
                 Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.LookRotation(aimDir, Vector3.up));
+                _starterAssetsInputs.shoot = false;
+            }
+            else
+            {
                 _starterAssetsInputs.shoot = false;
             }
         }

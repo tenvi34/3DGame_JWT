@@ -33,6 +33,7 @@ namespace Weapon
                 Instantiate(vfxHitRed, transform.position, Quaternion.identity);
             }
 
+            Debug.Log("Hit: " + other.name);
             Destroy(gameObject);
         }
     }

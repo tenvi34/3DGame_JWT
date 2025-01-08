@@ -89,7 +89,6 @@ namespace StarterAssets
         private float _terminalVelocity = 53.0f;
         
         // 무기 관련
-        private bool _isShooting = false;
         private bool _isReload;
 
         // 타임아웃 관련
@@ -170,7 +169,6 @@ namespace StarterAssets
             JumpAndGravity(); // 점프 및 중력 처리
             GroundedCheck(); // 지면 확인
             Move(); // 이동 처리
-            // Attack(); // 공격
             Reload(); // 장전
         }
 
@@ -287,11 +285,6 @@ namespace StarterAssets
             
             // 플레이어 이동
             _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
-            
-            // if (_input.sprint && _aimController != null && _aimController.CheckAiming)
-            // {
-            //     _aimController.CancelAiming(); // 견착 해제
-            // }
             
             // 애니메이터 업데이트
             if (_hasAnimator)
@@ -433,20 +426,6 @@ namespace StarterAssets
                     FootstepAudioVolume);
             }
         }
-
-        // 공격
-        private void Attack()
-        {
-            if (Input.GetMouseButton(0) && !_isShooting)
-            {
-                _isShooting = true;
-                _weaponController.Use();
-                _animator.SetTrigger(_animIDShot);
-                
-                // 일정 시간이 지나야 사격 가능으로 변경
-                StartCoroutine(ResetShoot());
-            }
-        }
         
         // 장전
         private void Reload()
@@ -464,13 +443,6 @@ namespace StarterAssets
         {
             _weaponController.curAmmo = _weaponController.maxAmmo;
             _isReload = false;
-        }
-        
-        private IEnumerator ResetShoot()
-        {
-            yield return new WaitForSeconds(0.5f);
-            _isShooting = false;
-            _animator.ResetTrigger(_animIDShot);
         }
 
         // 감도 설정
