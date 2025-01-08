@@ -169,7 +169,6 @@ namespace StarterAssets
             JumpAndGravity(); // 점프 및 중력 처리
             GroundedCheck(); // 지면 확인
             Move(); // 이동 처리
-            Reload(); // 장전
         }
 
         private void LateUpdate()
@@ -425,24 +424,6 @@ namespace StarterAssets
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center),
                     FootstepAudioVolume);
             }
-        }
-        
-        // 장전
-        private void Reload()
-        {
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                _animator.SetTrigger(_animIDReload);
-                _isReload = true;
-                
-                Invoke(nameof(ReloadOut), 0.5f);
-            }
-        }
-        
-        private void ReloadOut()
-        {
-            _weaponController.curAmmo = _weaponController.maxAmmo;
-            _isReload = false;
         }
 
         // 감도 설정

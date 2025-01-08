@@ -16,12 +16,15 @@ namespace Player
         [SerializeField] private Transform bulletPrefab;
         [SerializeField] private Transform bulletSpawnPoint;
         
+        private bool _isReloading = false; // 장전중인걸 확인
+        
         private StarterAssetsInputs _starterAssetsInputs;
         private ThirdPersonController _playerController;
         private Animator _animator;
         
         // 애니메이터
-        private static readonly int DoShoot = Animator.StringToHash("DoShoot");
+        private static readonly int DoShoot = Animator.StringToHash("DoShoot"); // 사격
+        private static readonly int DoReload = Animator.StringToHash("DoReload"); // 장전
 
         private void Awake()
         {
@@ -70,15 +73,47 @@ namespace Player
             if (_starterAssetsInputs.shoot && _starterAssetsInputs.aim) // 조준 상태에서만 발사 가능
             {
                 _starterAssetsInputs.sprint = false;
+                
+                // 조준점과 총알 발사 위치를 기준으로 총알을 생성하고, 발사 애니메이션을 재생
                 Vector3 aimDir = (mouseWorldPosition - bulletSpawnPoint.position).normalized;
                 Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.LookRotation(aimDir, Vector3.up));
                 _animator.SetTrigger(DoShoot);
+                
                 _starterAssetsInputs.shoot = false;
             }
             else
             {
                 _starterAssetsInputs.shoot = false;
             }
+
+            if (_starterAssetsInputs.reload && !_starterAssetsInputs.shoot && !_isReloading)
+            {
+                Debug.Log("장전 시작");
+                Reload();
+            }
+        }
+        
+        // 장전
+        private void Reload()
+        {
+            if (_isReloading) return; // 장전 중이면 실행하지 않음
+
+            _isReloading = true; // 장전 상태 활성화
+            _animator.SetTrigger(DoReload); // 장전 애니메이션 실행
+            // _starterAssetsInputs.reload = false; // 입력 초기화
+            
+            // 애니메이션 길이 가져오기
+            AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0); // 0은 Base Layer
+            float reloadAnimationLength = stateInfo.length; // 현재 재생 중인 상태의 애니메이션 길이
+
+            Invoke(nameof(ReloadOut), reloadAnimationLength); // 애니메이션 재생이 끝나면 다시 장전 가능 및 탄창 교체 완료
+        }
+        
+        private void ReloadOut()
+        {
+            // _weaponController.curAmmo = _weaponController.maxAmmo;
+            _starterAssetsInputs.reload = false;
+            _isReloading = false;
         }
     }
 }

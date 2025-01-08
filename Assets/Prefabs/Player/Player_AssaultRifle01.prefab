@@ -4653,7 +4653,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4868164247466224}
   - component: {fileID: 137939509330510438}
-  - component: {fileID: 4661955317290338773}
   m_Layer: 7
   m_Name: AssaultRifle
   m_TagString: Untagged
@@ -4786,24 +4785,6 @@ SkinnedMeshRenderer:
     m_Center: {x: -24.761269, y: -35.822716, z: -10.868752}
     m_Extent: {x: 95.06205, y: 36.50721, z: 92.17865}
   m_DirtyAABB: 0
---- !u!114 &4661955317290338773
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1939457227555564}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 999f7dcb4de74843af1ccee7eefa83e2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  weaponType: 0
-  fireMode: 0
-  bulletPos: {fileID: 5142651966158863528}
-  bullet: {fileID: 356878711729843165, guid: 9133d434d61a1554b84de65600db5d1c, type: 3}
-  maxAmmo: 30
-  curAmmo: 30
 --- !u!1 &1973982719328658
 GameObject:
   m_ObjectHideFlags: 0
