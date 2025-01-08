@@ -12,6 +12,8 @@ namespace Player
         [SerializeField] private float aimSensitivity;
         [SerializeField] private LayerMask aimColliderLayerMask;
         [SerializeField] private Transform debugTransform;
+        [SerializeField] private Transform bulletPrefab;
+        [SerializeField] private Transform bulletSpawnPoint;
         
         private StarterAssetsInputs _starterAssetsInputs;
         private ThirdPersonController _playerController;
@@ -56,6 +58,13 @@ namespace Player
                 _aimVirtualCamera.gameObject.SetActive(false);
                 _playerController.SetSensitivity(normalSensitivity);
                 _playerController.SetRotateOnMove(true);
+            }
+
+            if (_starterAssetsInputs.shoot)
+            {
+                Vector3 aimDir = (mouseWorldPosition - bulletSpawnPoint.position).normalized;
+                Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.LookRotation(aimDir, Vector3.up));
+                _starterAssetsInputs.shoot = false;
             }
         }
     }

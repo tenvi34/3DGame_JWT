@@ -170,7 +170,7 @@ namespace StarterAssets
             JumpAndGravity(); // 점프 및 중력 처리
             GroundedCheck(); // 지면 확인
             Move(); // 이동 처리
-            Attack(); // 공격
+            // Attack(); // 공격
             Reload(); // 장전
         }
 
