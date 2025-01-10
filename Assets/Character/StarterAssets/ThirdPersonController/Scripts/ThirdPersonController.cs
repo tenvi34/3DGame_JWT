@@ -102,8 +102,9 @@ namespace StarterAssets
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
         private int _animIDAiming;
-        private int _animIDShot;
-        private int _animIDReload;
+        
+        // 커스텀
+        public bool isAimMove = false;
 
 #if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
@@ -185,8 +186,8 @@ namespace StarterAssets
             _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
             _animIDAiming = Animator.StringToHash("IsAiming");
-            _animIDShot = Animator.StringToHash("DoShot");
-            _animIDReload = Animator.StringToHash("DoReload");
+            // _animIDShot = Animator.StringToHash("DoShot");
+            // _animIDReload = Animator.StringToHash("DoReload");
         }
 
         // 캐릭터가 지면에 닿아 있는지 확인하고 애니메이터를 업데이트
@@ -229,6 +230,11 @@ namespace StarterAssets
         {
             // 이동 속도, 스프린트 속도, 스프린트 입력에 따라 목표 속도 설정
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+
+            if (isAimMove)
+            {
+                targetSpeed = MoveSpeed;
+            }
             
             // 간단한 가속 및 감속 설계
             // 참고: Vector2의 == 연산자는 근사치를 사용하므로 부동소수점 오류에 민감하지 않으며, magnitude보다 효율적임
@@ -292,7 +298,7 @@ namespace StarterAssets
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
                 
                 // 견착 상태
-                _animator.SetBool(_animIDAiming, _input.aim && Input.GetMouseButton(1));
+                // _animator.SetBool(_animIDAiming, _input.aim && Input.GetMouseButton(1));
             }
         }
 

@@ -63,7 +63,9 @@ namespace Player
                 _aimVirtualCamera.gameObject.SetActive(true);
                 _playerController.SetSensitivity(aimSensitivity);
                 _playerController.SetRotateOnMove(false);
+                _playerController.isAimMove = true;
                 _starterAssetsInputs.sprint = false;
+                _animator.SetLayerWeight(1, 1);
 
                 // 캐릭터가 조준 방향을 부드럽게 바라보도록 설정
                 Vector3 worldAimTarget = mouseWorldPosition;
@@ -76,6 +78,8 @@ namespace Player
                 _aimVirtualCamera.gameObject.SetActive(false);
                 _playerController.SetSensitivity(normalSensitivity);
                 _playerController.SetRotateOnMove(true);
+                _playerController.isAimMove = false;
+                _animator.SetLayerWeight(1, 0);
             }
         }
 
