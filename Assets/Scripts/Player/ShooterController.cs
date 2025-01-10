@@ -23,6 +23,10 @@ namespace Player
         [SerializeField] private Transform bulletPrefab;
         [SerializeField] private Transform bulletSpawnPoint;
         [SerializeField] private GameObject[] muzzleFlashPrefabs; // 총구 화염 프리팹 배열
+        
+        [Header("Sound")]
+        [SerializeField] private AudioSource audioSource; // AudioSource 컴포넌트
+        [SerializeField] private AudioClip shootSound;    // 총 발사 사운드 클립
 
         // 체크
         private bool _isReloading = false; // 장전중인지 확인
@@ -101,6 +105,7 @@ namespace Player
                 Vector3 mouseWorldPosition = debugTransform.position; // 조준점 위치를 활용
                 Vector3 aimDir = (mouseWorldPosition - bulletSpawnPoint.position).normalized;
                 SpawnRandomMuzzleFlash(); // 총구 화염 표시
+                PlayShootSound(); // 총 발사 사운드 재생
                 Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.LookRotation(aimDir, Vector3.up));
                 _animator.SetTrigger(DoShoot);
 
@@ -150,6 +155,11 @@ namespace Player
 
             // 일정 시간 후 자동 삭제
             Destroy(muzzleFlashInstance, 0.05f); // 총구 화염은 0.05초 뒤에 삭제
+        }
+        
+        private void PlayShootSound()
+        {
+            audioSource.PlayOneShot(shootSound);
         }
     }
 }
