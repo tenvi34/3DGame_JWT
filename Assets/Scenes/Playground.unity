@@ -375,6 +375,11 @@ PrefabInstance:
       objectReference: {fileID: 812954924}
     - target: {fileID: 5531254877620364542, guid: b691bd6f6bc28cd49af3a010e7e4d856,
         type: 3}
+      propertyPath: reloadSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 6a32a0d49cd240b4cb9934adf37a49a5, type: 3}
+    - target: {fileID: 5531254877620364542, guid: b691bd6f6bc28cd49af3a010e7e4d856,
+        type: 3}
       propertyPath: bulletPrefab
       value: 
       objectReference: {fileID: 6863857337172796870, guid: 3ab9b70be08b74a4faf38871cfbf534e,

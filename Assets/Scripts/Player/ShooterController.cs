@@ -27,6 +27,7 @@ namespace Player
         [Header("Sound")]
         [SerializeField] private AudioSource audioSource; // AudioSource 컴포넌트
         [SerializeField] private AudioClip shootSound;    // 총 발사 사운드 클립
+        [SerializeField] private AudioClip reloadSound;   // 장전 사운드 클립
 
         // 체크
         private bool _isReloading = false; // 장전중인지 확인
@@ -105,7 +106,7 @@ namespace Player
                 Vector3 mouseWorldPosition = debugTransform.position; // 조준점 위치를 활용
                 Vector3 aimDir = (mouseWorldPosition - bulletSpawnPoint.position).normalized;
                 SpawnRandomMuzzleFlash(); // 총구 화염 표시
-                PlayShootSound(); // 총 발사 사운드 재생
+                PlaySound(shootSound); // 총 발사 사운드 재생
                 Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.LookRotation(aimDir, Vector3.up));
                 _animator.SetTrigger(DoShoot);
 
@@ -125,12 +126,14 @@ namespace Player
             _isReloading = true; // 장전 상태 활성화
             _animator.SetTrigger(DoReload); // 장전 애니메이션 실행
             _starterAssetsInputs.reload = false; // 입력 초기화
+            
+            PlaySound(reloadSound); // 장전 사운드 재생
 
             // 애니메이션 길이 가져오기
-            AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0); // 0은 Base Layer
-            float reloadAnimationLength = stateInfo.length; // 현재 재생 중인 상태의 애니메이션 길이
+            // AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0); // 0은 Base Layer
+            // float reloadAnimationLength = stateInfo.length; // 현재 재생 중인 상태의 애니메이션 길이
 
-            Invoke(nameof(ReloadOut), reloadAnimationLength);
+            Invoke(nameof(ReloadOut), 0.5f);
         }
 
         private void ReloadOut()
@@ -157,9 +160,9 @@ namespace Player
             Destroy(muzzleFlashInstance, 0.05f); // 총구 화염은 0.05초 뒤에 삭제
         }
         
-        private void PlayShootSound()
+        private void PlaySound(AudioClip audioClip)
         {
-            audioSource.PlayOneShot(shootSound);
+            audioSource.PlayOneShot(audioClip);
         }
     }
 }
