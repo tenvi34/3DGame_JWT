@@ -6,6 +6,7 @@ namespace Weapon
     {
         [SerializeField] private Transform vfxHitGreen;
         [SerializeField] private Transform vfxHitRed;
+        [SerializeField] private float speed = 50f;
 
         private Rigidbody _bulletRigidbody;
 
@@ -16,7 +17,6 @@ namespace Weapon
 
         private void Start()
         {
-            float speed = 50f;
             _bulletRigidbody.velocity = transform.forward * speed;
         }
 

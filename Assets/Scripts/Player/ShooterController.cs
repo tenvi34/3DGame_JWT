@@ -1,21 +1,30 @@
-﻿using Cinemachine;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using Cinemachine;
 using StarterAssets;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Weapon;
+using Random = UnityEngine.Random;
 
 namespace Player
 {
     public class ShooterController : MonoBehaviour
     {
+        // 설정값
         [SerializeField] private CinemachineVirtualCamera _aimVirtualCamera;
         [SerializeField] private float normalSensitivity;
         [SerializeField] private float aimSensitivity;
         [SerializeField] private LayerMask aimColliderLayerMask;
         [SerializeField] private Transform debugTransform;
+        
+        [Header("Bullet")]
         [SerializeField] private Transform bulletPrefab;
         [SerializeField] private Transform bulletSpawnPoint;
+        [SerializeField] private GameObject[] muzzleFlashPrefabs; // 총구 화염 프리팹 배열
 
+        // 체크
         private bool _isReloading = false; // 장전중인지 확인
 
         private StarterAssetsInputs _starterAssetsInputs;
@@ -63,7 +72,6 @@ namespace Player
                 _aimVirtualCamera.gameObject.SetActive(true);
                 _playerController.SetSensitivity(aimSensitivity);
                 _playerController.SetRotateOnMove(false);
-                _playerController.isAimMove = true;
                 _starterAssetsInputs.sprint = false;
                 _animator.SetLayerWeight(1, 1);
 
@@ -78,7 +86,6 @@ namespace Player
                 _aimVirtualCamera.gameObject.SetActive(false);
                 _playerController.SetSensitivity(normalSensitivity);
                 _playerController.SetRotateOnMove(true);
-                _playerController.isAimMove = false;
                 _animator.SetLayerWeight(1, 0);
             }
         }
@@ -93,6 +100,7 @@ namespace Player
                 // 총알 생성 및 발사 애니메이션 재생
                 Vector3 mouseWorldPosition = debugTransform.position; // 조준점 위치를 활용
                 Vector3 aimDir = (mouseWorldPosition - bulletSpawnPoint.position).normalized;
+                SpawnRandomMuzzleFlash(); // 총구 화염 표시
                 Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.LookRotation(aimDir, Vector3.up));
                 _animator.SetTrigger(DoShoot);
 
@@ -125,6 +133,23 @@ namespace Player
             // _weaponController.curAmmo = _weaponController.maxAmmo;
             _starterAssetsInputs.reload = false;
             _isReloading = false; // 장전 상태 초기화
+        }
+        
+        private void SpawnRandomMuzzleFlash()
+        {
+            // 총구 화염 프리팹 배열 중 랜덤으로 선택
+            int randomIndex = Random.Range(0, muzzleFlashPrefabs.Length);
+            GameObject selectedMuzzleFlash = muzzleFlashPrefabs[randomIndex];
+
+            // 선택된 총구 화염을 활성화
+            GameObject muzzleFlashInstance = Instantiate(
+                selectedMuzzleFlash, 
+                bulletSpawnPoint.position, 
+                bulletSpawnPoint.rotation
+            );
+
+            // 일정 시간 후 자동 삭제
+            Destroy(muzzleFlashInstance, 0.05f); // 총구 화염은 0.05초 뒤에 삭제
         }
     }
 }

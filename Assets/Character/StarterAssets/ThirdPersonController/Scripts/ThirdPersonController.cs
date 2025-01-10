@@ -230,11 +230,6 @@ namespace StarterAssets
         {
             // 이동 속도, 스프린트 속도, 스프린트 입력에 따라 목표 속도 설정
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
-
-            if (isAimMove)
-            {
-                targetSpeed = MoveSpeed;
-            }
             
             // 간단한 가속 및 감속 설계
             // 참고: Vector2의 == 연산자는 근사치를 사용하므로 부동소수점 오류에 민감하지 않으며, magnitude보다 효율적임
