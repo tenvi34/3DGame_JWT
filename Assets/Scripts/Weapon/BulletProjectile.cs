@@ -8,6 +8,7 @@ namespace Weapon
         [SerializeField] private Transform vfxHitRed;
         [SerializeField] private float speed = 50f;
         [SerializeField] private float destroyTime = 3f;
+        [SerializeField] private float damage = 20f;
 
         private Rigidbody _bulletRigidbody;
 
@@ -41,15 +42,20 @@ namespace Weapon
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.GetComponent<BulletTarget>() != null)
+            // if (other.GetComponent<BulletTarget>() != null)
+            // {
+            //     // 목표물에 맞았을 때 (Ex. 적)
+            //     Instantiate(vfxHitGreen, transform.position, Quaternion.identity);
+            // }
+            // else
+            // {
+            //     // 이외에 맞았을 때 (Ex. 벽, 오브젝트 등..)
+            //     Instantiate(vfxHitRed, transform.position, Quaternion.identity);
+            // }
+
+            if (other.CompareTag("Enemy"))
             {
-                // 목표물에 맞았을 때 (Ex. 적)
-                Instantiate(vfxHitGreen, transform.position, Quaternion.identity);
-            }
-            else
-            {
-                // 이외에 맞았을 때 (Ex. 벽, 오브젝트 등..)
-                Instantiate(vfxHitRed, transform.position, Quaternion.identity);
+                other.gameObject.GetComponent<Enemy.Enemy>().currentHP -= damage;
             }
 
             Debug.Log("Hit: " + other.name);

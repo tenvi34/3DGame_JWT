@@ -47,6 +47,8 @@ namespace Player
             _starterAssetsInputs = GetComponent<StarterAssetsInputs>();
             _playerController = GetComponent<ThirdPersonController>();
             _animator = GetComponent<Animator>();
+            
+            InitBullet(); // 총알 초기화
         }
 
         private void Update()
