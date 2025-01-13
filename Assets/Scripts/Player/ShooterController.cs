@@ -23,6 +23,8 @@ namespace Player
         [SerializeField] private Transform bulletPrefab;
         [SerializeField] private Transform bulletSpawnPoint;
         [SerializeField] private GameObject[] muzzleFlashPrefabs; // 총구 화염 프리팹 배열
+        public int maxBullet = 30;
+        public int currentBullet = 0;
         
         [Header("Sound")]
         [SerializeField] private AudioSource audioSource; // AudioSource 컴포넌트
@@ -100,6 +102,8 @@ namespace Player
         {
             if (_starterAssetsInputs.shoot && _starterAssetsInputs.aim) // 조준 상태에서만 발사 가능
             {
+                if (currentBullet <= 0) return;
+                
                 _starterAssetsInputs.sprint = false;
 
                 // 총알 생성 및 발사 애니메이션 재생
@@ -108,6 +112,7 @@ namespace Player
                 SpawnRandomMuzzleFlash(); // 총구 화염 표시
                 PlaySound(shootSound); // 총 발사 사운드 재생
                 Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.LookRotation(aimDir, Vector3.up));
+                currentBullet -= 1; // 총알 감소
                 _animator.SetTrigger(DoShoot);
 
                 _starterAssetsInputs.shoot = false;
@@ -133,14 +138,19 @@ namespace Player
             // AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0); // 0은 Base Layer
             // float reloadAnimationLength = stateInfo.length; // 현재 재생 중인 상태의 애니메이션 길이
 
-            Invoke(nameof(ReloadOut), 0.5f);
+            Invoke(nameof(ReloadOut), 1f);
         }
 
         private void ReloadOut()
         {
-            // _weaponController.curAmmo = _weaponController.maxAmmo;
             _starterAssetsInputs.reload = false;
             _isReloading = false; // 장전 상태 초기화
+            InitBullet(); // 총알 초기화
+        }
+        
+        private void InitBullet()
+        {
+            currentBullet = maxBullet;
         }
         
         private void SpawnRandomMuzzleFlash()
