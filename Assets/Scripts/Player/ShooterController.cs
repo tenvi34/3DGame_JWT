@@ -17,7 +17,7 @@ namespace Player
         [SerializeField] private float normalSensitivity;
         [SerializeField] private float aimSensitivity;
         [SerializeField] private LayerMask aimColliderLayerMask;
-        [SerializeField] private Transform debugTransform;
+        // [SerializeField] private Transform debugTransform;
         
         [Header("Bullet")]
         [SerializeField] private Transform bulletPrefab;
@@ -72,7 +72,7 @@ namespace Player
             Ray ray = Camera.main.ScreenPointToRay(screenCenterPoint);
             if (Physics.Raycast(ray, out RaycastHit raycastHit, 999f, aimColliderLayerMask))
             {
-                debugTransform.position = raycastHit.point;
+                // debugTransform.position = raycastHit.point;
                 mouseWorldPosition = raycastHit.point;
             }
 
@@ -107,10 +107,18 @@ namespace Player
                 if (currentBullet <= 0) return;
                 
                 _starterAssetsInputs.sprint = false;
+                
+                Vector3 mouseWorldPosition = Vector3.zero;
+                Vector2 screenCenterPoint = new Vector2(Screen.width / 2f, Screen.height / 2f);
+                Ray ray = Camera.main.ScreenPointToRay(screenCenterPoint);
+                if (Physics.Raycast(ray, out RaycastHit raycastHit, 999f, aimColliderLayerMask))
+                {
+                    mouseWorldPosition = raycastHit.point; // 조준점 위치를 활용
+                }
 
                 // 총알 생성 및 발사 애니메이션 재생
-                Vector3 mouseWorldPosition = debugTransform.position; // 조준점 위치를 활용
                 Vector3 aimDir = (mouseWorldPosition - bulletSpawnPoint.position).normalized;
+                
                 SpawnRandomMuzzleFlash(); // 총구 화염 표시
                 PlaySound(shootSound); // 총 발사 사운드 재생
                 Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.LookRotation(aimDir, Vector3.up));

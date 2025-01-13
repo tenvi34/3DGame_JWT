@@ -53,6 +53,8 @@ namespace Weapon
             //     Instantiate(vfxHitRed, transform.position, Quaternion.identity);
             // }
 
+            
+            // 적에게 맞췄을 때
             if (other.CompareTag("Enemy"))
             {
                 other.gameObject.GetComponent<Enemy.Enemy>().currentHP -= damage;
