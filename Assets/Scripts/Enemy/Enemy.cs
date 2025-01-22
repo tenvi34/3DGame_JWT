@@ -58,14 +58,17 @@ namespace Enemy
                 // 타겟을 바라보도록
                 transform.LookAt(_targetPlayer.transform.position);
 
+                // 적의 감지 범위(_navMeshAgent.stoppingDistance)안에 플레이어가 있는지 확인
                 bool isRange = Vector3.Distance(transform.position, _targetPlayer.transform.position) <= _navMeshAgent.stoppingDistance;
 
                 if (isRange)
                 {
+                    // 있으면 공격
                     _animator.SetTrigger(Attack);
                 }
                 else
                 {
+                    // 없으면 계속 이동
                     _animator.SetFloat(MoveSpeed, _navMeshAgent.velocity.magnitude);
                 }
 
