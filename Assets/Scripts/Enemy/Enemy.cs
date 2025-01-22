@@ -7,7 +7,7 @@ namespace Enemy
     {
         [SerializeField] private Slider HPBar;
         
-        private float enemyMaxHP = 100;
+        private float enemyMaxHP = 50;
         public float currentHP = 0;
         
         void Start()
