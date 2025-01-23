@@ -506,6 +506,7 @@ GameObject:
   - component: {fileID: 6930373436760183755}
   - component: {fileID: 6930373436752673811}
   - component: {fileID: 580698267687117653}
+  - component: {fileID: -866045848194811652}
   - component: {fileID: 779341130909537247}
   - component: {fileID: 7424829363149686385}
   m_Layer: 8
@@ -577,6 +578,23 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!114 &-866045848194811652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6930373436760084395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5374c9e6d5a4d2e9e7f8c99fc73c348, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PatrolPoints: []
+  CurrentPatrolIndex: 0
+  DetectionRadius: 10
+  InvestigationTime: 5
+  LastKnownPlayerPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &779341130909537247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -591,7 +609,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HPBar: {fileID: 8762500586446224297}
   currentHP: 0
-  targetDelay: 0.5
 --- !u!195 &7424829363149686385
 NavMeshAgent:
   m_ObjectHideFlags: 0
