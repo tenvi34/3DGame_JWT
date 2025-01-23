@@ -15,6 +15,7 @@ namespace Enemy
 
         private NavMeshAgent _navMeshAgent;
         private Animator _animator;
+        private CapsuleCollider _enemyCollider;
 
         private GameObject _targetPlayer;
         [SerializeField] private float targetDelay = 0.5f;
@@ -28,6 +29,7 @@ namespace Enemy
         {
             _navMeshAgent = GetComponent<NavMeshAgent>();
             _animator = GetComponent<Animator>();
+            _enemyCollider = GetComponent<CapsuleCollider>();
 
             // 플레이어 태그 붙은 오브젝트를 타겟으로 세팅
             _targetPlayer = GameObject.FindWithTag("Player");
@@ -43,11 +45,19 @@ namespace Enemy
                 StartCoroutine(EnemyDie());
                 return;
             }
-            
+
+            ChasePlayer(); // 플레이어 추적
+        }
+        
+        private void InitEnemyHP()
+        {
+            currentHP = enemyMaxHP;
+        }
+
+        private void ChasePlayer()
+        {
             if (_targetPlayer != null)
             {
-                Debug.Log("타켓 찾음");
-                
                 float maxDelay = 0.5f;
                 targetDelay += Time.deltaTime;
                 
@@ -75,16 +85,12 @@ namespace Enemy
                 targetDelay = 0;
             }
         }
-        
-        private void InitEnemyHP()
-        {
-            currentHP = enemyMaxHP;
-        }
 
         IEnumerator EnemyDie()
         {
             _navMeshAgent.speed = 0;
             _animator.SetTrigger(Dead);
+            _enemyCollider.enabled= false;
 
             yield return new WaitForSeconds(3f);
             Destroy(gameObject);
