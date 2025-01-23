@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
@@ -10,7 +11,7 @@ namespace Enemy
     {
         [SerializeField] private Slider HPBar;
         private EnemyController _enemyController;
-
+        
         private float enemyMaxHP = 50;
         public float currentHP = 0;
 
@@ -18,6 +19,12 @@ namespace Enemy
         private CapsuleCollider _enemyCollider;
 
         private static readonly int Dead = Animator.StringToHash("Dead");
+
+        // 스폰 포인트 인덱스를 추적하기 위한 변수 추가
+        private int _spawnPointIndex;
+
+        // 죽음 이벤트
+        public event Action<int> OnEnemyDeath;
 
         private void Start()
         {
@@ -31,7 +38,7 @@ namespace Enemy
         private void Update()
         {
             HPBar.value = currentHP / enemyMaxHP;
-
+            
             if (currentHP <= 0)
             {
                 Die();
@@ -49,7 +56,16 @@ namespace Enemy
             _animator.SetTrigger(Dead);
             _enemyCollider.enabled = false;
 
+            // 스폰 포인트 카운트 감소 이벤트 호출
+            OnEnemyDeath?.Invoke(_spawnPointIndex);
+
             Destroy(gameObject, 3f);
+        }
+
+        // 스폰 포인트 인덱스 설정 메서드 추가
+        public void SetSpawnPointIndex(int index)
+        {
+            _spawnPointIndex = index;
         }
 
         // 외부에서 호출 가능한 메서드들
