@@ -595,6 +595,8 @@ MonoBehaviour:
   DetectionRadius: 10
   InvestigationTime: 5
   LastKnownPlayerPosition: {x: 0, y: 0, z: 0}
+  RangedAttackRadius: 15
+  CurrentAttackType: 0
 --- !u!114 &779341130909537247
 MonoBehaviour:
   m_ObjectHideFlags: 0

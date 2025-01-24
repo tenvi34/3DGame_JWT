@@ -3744,7 +3744,7 @@ MonoBehaviour:
   GroundedRadius: 0.28
   GroundLayers:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 65
   CinemachineCameraTarget: {fileID: 6620672703175606775}
   TopClamp: 70
   BottomClamp: -30
@@ -3768,8 +3768,7 @@ MonoBehaviour:
   aimSensitivity: 0.5
   aimColliderLayerMask:
     serializedVersion: 2
-    m_Bits: 1
-  debugTransform: {fileID: 0}
+    m_Bits: 64
   bulletPrefab: {fileID: 6863857337172796870, guid: 3ab9b70be08b74a4faf38871cfbf534e,
     type: 3}
   bulletSpawnPoint: {fileID: 5142651966158863528}

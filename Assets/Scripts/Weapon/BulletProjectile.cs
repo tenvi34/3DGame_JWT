@@ -57,7 +57,7 @@ namespace Weapon
             // 적에게 맞췄을 때
             if (other.CompareTag("Enemy"))
             {
-                other.gameObject.GetComponent<Enemy.EnemyZombie>().currentHP -= damage;
+                other.gameObject.GetComponent<Enemy.EnemyZombie>().TakeDamage(damage);
             }
 
             Debug.Log("Hit: " + other.name);

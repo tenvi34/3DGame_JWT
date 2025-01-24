@@ -48,6 +48,26 @@ namespace Enemy
 
             // 다음 순찰 지점으로 이동
             controller.NavMeshAgent.destination = controller.PatrolPoints[controller.CurrentPatrolIndex].position;
+            
+            // 플레이어 감지 레이캐스트
+            Vector3 directionToPlayer = (controller.Player.transform.position - controller.transform.position).normalized;
+            float distanceToPlayer = Vector3.Distance(controller.transform.position, controller.Player.transform.position);
+
+            // 장애물 레이어 설정 (Environment 레이어 사용)
+            LayerMask obstacleLayer = LayerMask.GetMask("Environment");
+
+            // 감지 반경 내에 있고 장애물이 없는지 확인
+            bool isPlayerVisible = !Physics.Raycast(
+                controller.transform.position + Vector3.up, // 약간 높은 위치에서 레이 발사
+                directionToPlayer, 
+                distanceToPlayer, 
+                obstacleLayer
+            );
+
+            if (distanceToPlayer <= controller.DetectionRadius && isPlayerVisible)
+            {
+                controller.TransitionToState(new ChaseState());
+            }
         }
     }
 
@@ -87,34 +107,51 @@ namespace Enemy
         // 애니메이터 파라미터 해시값 캐싱
         private static readonly int Attack = Animator.StringToHash("Attack");
         private static readonly int MoveSpeed = Animator.StringToHash("MoveSpeed");
+        
+        // 장애물 레이어
+        private LayerMask _obstacleLayer = LayerMask.GetMask("Environment");
 
         public override void Update(EnemyController controller)
         {
+            // 플레이어가 없으면 업데이트 중단
             if (controller.Player == null) return;
 
-            // 플레이어 위치로 이동 및 방향 전환
-            controller.NavMeshAgent.destination = controller.Player.transform.position;
-            controller.transform.LookAt(controller.Player.transform.position);
+            // 플레이어까지의 방향 및 거리 계산
+            Vector3 directionToPlayer = controller.Player.transform.position - controller.transform.position;
+            float distanceToPlayer = directionToPlayer.magnitude;
 
-            // 플레이어와의 거리 계산
-            float distanceToPlayer = Vector3.Distance(controller.transform.position, controller.Player.transform.position);
+            // 플레이어까지 장애물이 없는지 레이캐스트로 확인
+            bool isPlayerVisible = !Physics.Raycast(
+                controller.transform.position + Vector3.up, // 약간 높은 위치에서 레이 발사
+                directionToPlayer.normalized, 
+                distanceToPlayer, 
+                _obstacleLayer
+            );
 
-            // 공격 범위 내 여부 확인
-            bool isInAttackRange = distanceToPlayer <= controller.NavMeshAgent.stoppingDistance;
-
-            // 공격 범위 내면 공격, 아니면 이동
-            if (isInAttackRange)
+            // 감지 범위 내이고 시야가 막히지 않았을 때
+            if (distanceToPlayer <= controller.DetectionRadius && isPlayerVisible)
             {
-                controller.Animator.SetTrigger(Attack);
+                // 플레이어 위치로 이동
+                controller.NavMeshAgent.destination = controller.Player.transform.position;
+            
+                // 플레이어 방향 바라보기
+                controller.transform.LookAt(controller.Player.transform.position);
+            
+                // 이동 애니메이션 속도 설정
+                controller.Animator.SetFloat(MoveSpeed, controller.NavMeshAgent.velocity.magnitude);
+                
+                // 공격 범위 내 여부 확인
+                bool isInAttackRange = distanceToPlayer <= controller.NavMeshAgent.stoppingDistance;
+
+                // 공격 범위 내면 공격, 아니면 이동
+                if (isInAttackRange)
+                {
+                    controller.TransitionToState(new MeleeAttackState());
+                }
             }
             else
             {
-                controller.Animator.SetFloat(MoveSpeed, controller.NavMeshAgent.velocity.magnitude);
-            }
-
-            // 플레이어가 감지 범위를 벗어나면 조사 상태로 전환
-            if (distanceToPlayer > controller.DetectionRadius)
-            {
+                // 플레이어를 더 이상 감지할 수 없으면 조사 상태로 전환
                 controller.TransitionToState(new InvestigateState());
             }
         }
@@ -249,6 +286,10 @@ namespace Enemy
             Animator = GetComponent<Animator>();
             Player = GameObject.FindGameObjectWithTag("Player");
 
+            // 순찰 포인트 동적 할당
+            var patrolManager = FindObjectOfType<EnemyPatrolManager>();
+            patrolManager?.AssignNearestPatrolPoints(this);
+            
             TransitionToState(new PatrolState());
         }
 
