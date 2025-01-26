@@ -1860,7 +1860,7 @@ PrefabInstance:
     - target: {fileID: 5010115953286470057, guid: bec5fc21c6f78bc4791e8aa36dd7ca24,
         type: 3}
       propertyPath: maxEnemiesPerSpawnPoint.Array.data[2]
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5010115953286470057, guid: bec5fc21c6f78bc4791e8aa36dd7ca24,
         type: 3}
@@ -1885,11 +1885,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1550963306287383459, guid: 3ceeb0b538658c14496fb8a1655c0d73,
-        type: 3}
-      propertyPath: CameraCollisionFilter.m_Bits
-      value: 65
-      objectReference: {fileID: 0}
     - target: {fileID: 2110555879088016984, guid: 3ceeb0b538658c14496fb8a1655c0d73,
         type: 3}
       propertyPath: m_Name

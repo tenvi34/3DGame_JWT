@@ -70,7 +70,7 @@ public class GameManager : MonoBehaviour
             currentEnemiesAtSpawnPoint[selectedSpawnIndex]++;
 
             // 몬스터 파괴 시 카운트 감소
-            spawnedEnemy.GetComponent<Enemy.EnemyZombie>().OnEnemyDeath += DecreaseEnemyCount;
+            // spawnedEnemy.GetComponent<Enemy.EnemyZombie>().OnEnemyDeath += DecreaseEnemyCount;
         }
 
         yield return new WaitForSeconds(2f);
@@ -80,8 +80,8 @@ public class GameManager : MonoBehaviour
     }
 
     // 몬스터 카운트 감소 메서드
-    void DecreaseEnemyCount(int spawnPointIndex)
-    {
-        currentEnemiesAtSpawnPoint[spawnPointIndex]--;
-    }
+    // void DecreaseEnemyCount(int spawnPointIndex)
+    // {
+    //     currentEnemiesAtSpawnPoint[spawnPointIndex]--;
+    // }
 }
