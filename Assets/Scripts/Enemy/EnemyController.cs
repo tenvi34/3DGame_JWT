@@ -43,6 +43,7 @@ namespace Enemy
             // 현재 순찰 지점에 도착했다면 다음 지점으로 변경
             if (Vector3.Distance(controller.transform.position, controller.PatrolPoints[controller.CurrentPatrolIndex].position) < 1f)
             {
+                // 다음 순찰 포인트로 이동 (순환)
                 controller.CurrentPatrolIndex = (controller.CurrentPatrolIndex + 1) % controller.PatrolPoints.Length;
             }
 
@@ -285,10 +286,6 @@ namespace Enemy
             NavMeshAgent = GetComponent<NavMeshAgent>();
             Animator = GetComponent<Animator>();
             Player = GameObject.FindGameObjectWithTag("Player");
-
-            // 순찰 포인트 동적 할당
-            var patrolManager = FindObjectOfType<EnemyPatrolManager>();
-            patrolManager?.AssignNearestPatrolPoints(this);
             
             TransitionToState(new PatrolState());
         }
