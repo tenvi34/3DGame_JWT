@@ -68,8 +68,8 @@ namespace Enemy
             Vector3 directionToPlayer = (controller.Player.transform.position - controller.transform.position).normalized;
             float distanceToPlayer = Vector3.Distance(controller.transform.position, controller.Player.transform.position);
 
-            // 장애물 레이어 설정 (Environment 레이어 사용)
-            LayerMask obstacleLayer = LayerMask.GetMask("Environment");
+            // 장애물 레이어 설정
+            LayerMask obstacleLayer = LayerMask.GetMask("Default");
 
             // 감지 반경 내에 있고 장애물이 없는지 확인
             bool isPlayerVisible = !Physics.Raycast(
@@ -124,7 +124,7 @@ namespace Enemy
         private static readonly int MoveSpeed = Animator.StringToHash("MoveSpeed");
         
         // 장애물 레이어
-        private LayerMask _obstacleLayer = LayerMask.GetMask("Environment");
+        private LayerMask _obstacleLayer = LayerMask.GetMask("Default");
 
         public override void Update(EnemyController controller)
         {

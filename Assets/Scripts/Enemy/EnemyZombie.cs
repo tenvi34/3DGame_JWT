@@ -19,13 +19,7 @@ namespace Enemy
         private CapsuleCollider _enemyCollider;
 
         private static readonly int Dead = Animator.StringToHash("Dead");
-
-        // 스폰 포인트 인덱스를 추적하기 위한 변수 추가
-        // private int _spawnPointIndex;
-
-        // 죽음 이벤트
-        // public event Action<int> OnEnemyDeath;
-
+        
         private void Start()
         {
             _enemyController = GetComponent<EnemyController>();
@@ -56,17 +50,8 @@ namespace Enemy
             _animator.SetTrigger(Dead);
             _enemyCollider.enabled = false;
 
-            // 스폰 포인트 카운트 감소 이벤트 호출
-            // OnEnemyDeath?.Invoke(_spawnPointIndex);
-
             Destroy(gameObject, 3f);
         }
-
-        // 스폰 포인트 인덱스 설정 메서드 추가
-        // public void SetSpawnPointIndex(int index)
-        // {
-        //     _spawnPointIndex = index;
-        // }
 
         // 외부에서 호출 가능한 메서드들
         public void TakeDamage(float damage)
