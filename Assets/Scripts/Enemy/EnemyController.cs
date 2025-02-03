@@ -31,24 +31,38 @@ namespace Enemy
         // 상태 진입 시 초기 이동 속도 설정
         public override void Enter(EnemyController controller)
         {
+            controller.NavMeshAgent.destination = controller.GetCurrentPatrolPoint().position;
             controller.Animator.SetFloat(MoveSpeed, controller.NavMeshAgent.velocity.magnitude);
         }
 
         // 순찰 지점 순환 및 이동
         public override void Update(EnemyController controller)
         {
-            // 순찰 지점이 없으면 종료
-            if (controller.PatrolPoints.Length == 0) return;
+            // // 순찰 지점이 없으면 종료
+            // if (controller.PatrolPoints.Length == 0) return;
+            //
+            // // 현재 순찰 지점에 도착했다면 다음 지점으로 변경
+            // if (Vector3.Distance(controller.transform.position, controller.PatrolPoints[controller.CurrentPatrolIndex].position) < 1f)
+            // {
+            //     // 다음 순찰 포인트로 이동 (순환)
+            //     controller.CurrentPatrolIndex = (controller.CurrentPatrolIndex + 1) % controller.PatrolPoints.Length;
+            // }
+            //
+            // // 다음 순찰 지점으로 이동
+            // controller.NavMeshAgent.destination = controller.PatrolPoints[controller.CurrentPatrolIndex].position;
+            
+            if (controller.PatrolPoints == null || controller.PatrolPoints.Length == 0) return;
 
-            // 현재 순찰 지점에 도착했다면 다음 지점으로 변경
-            if (Vector3.Distance(controller.transform.position, controller.PatrolPoints[controller.CurrentPatrolIndex].position) < 1f)
+            // NavMeshAgent가 경로의 끝에 도달했는지 확인
+            if (!controller.NavMeshAgent.pathPending && 
+                controller.NavMeshAgent.remainingDistance <= controller.NavMeshAgent.stoppingDistance)
             {
-                // 다음 순찰 포인트로 이동 (순환)
-                controller.CurrentPatrolIndex = (controller.CurrentPatrolIndex + 1) % controller.PatrolPoints.Length;
+                // 다음 순찰 지점으로 이동
+                controller.MoveToNextPatrolPoint();
             }
 
-            // 다음 순찰 지점으로 이동
-            controller.NavMeshAgent.destination = controller.PatrolPoints[controller.CurrentPatrolIndex].position;
+            // 이동 애니메이션 업데이트
+            controller.Animator.SetFloat(MoveSpeed, controller.NavMeshAgent.velocity.magnitude);
             
             // 플레이어 감지 레이캐스트
             Vector3 directionToPlayer = (controller.Player.transform.position - controller.transform.position).normalized;
@@ -263,6 +277,7 @@ namespace Enemy
 
         // 순찰 관련 변수
         public Transform[] PatrolPoints;  // 순찰할 지점들
+        private int[] _patrolOrder;       // 각 몬스터별 독립적인 순찰 순서
         public int CurrentPatrolIndex = 0;  // 현재 순찰 지점 인덱스
 
         // 감지 및 행동 설정 변수
@@ -287,6 +302,7 @@ namespace Enemy
             Animator = GetComponent<Animator>();
             Player = GameObject.FindGameObjectWithTag("Player");
             
+            InitializePatrolOrder();
             TransitionToState(new PatrolState());
         }
 
@@ -302,6 +318,36 @@ namespace Enemy
             _currentState?.Exit(this);  // 현재 상태 종료
             _currentState = newState;   // 새 상태로 변경
             _currentState?.Enter(this); // 새 상태 진입
+        }
+        
+        // 순찰
+        private void InitializePatrolOrder()
+        {
+            _patrolOrder = new int[PatrolPoints.Length];
+            for (int i = 0; i < PatrolPoints.Length; i++)
+            {
+                _patrolOrder[i] = i;
+            }
+            
+            // Fisher-Yates 셔플로 순찰 순서 랜덤화
+            for (int i = _patrolOrder.Length - 1; i > 0; i--)
+            {
+                int randomIndex = Random.Range(0, i + 1);
+                (_patrolOrder[i], _patrolOrder[randomIndex]) = (_patrolOrder[randomIndex], _patrolOrder[i]);
+            }
+        }
+        
+        // 현재 순찰 포인트
+        public Transform GetCurrentPatrolPoint()
+        {
+            return PatrolPoints[_patrolOrder[CurrentPatrolIndex]];
+        }
+
+        // 다음 순찰 포인트로 이동
+        public void MoveToNextPatrolPoint()
+        {
+            CurrentPatrolIndex = (CurrentPatrolIndex + 1) % _patrolOrder.Length;
+            NavMeshAgent.destination = GetCurrentPatrolPoint().position;
         }
 
         // 소리에 반응하여 조사 상태로 전환
