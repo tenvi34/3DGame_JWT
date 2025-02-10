@@ -27,6 +27,8 @@ namespace Enemy
             _enemyCollider = GetComponent<CapsuleCollider>();
 
             InitEnemyHP();
+
+            HPBar.gameObject.SetActive(false);
         }
 
         private void Update()
@@ -56,6 +58,7 @@ namespace Enemy
         // 외부에서 호출 가능한 메서드들
         public void TakeDamage(float damage)
         {
+            HPBar.gameObject.SetActive(true);
             currentHP -= damage;
             _enemyController.StartChasing(); // 공격받으면 즉시 추격 상태로 전환
         }
