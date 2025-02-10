@@ -60,6 +60,8 @@ namespace Enemy
         {
             HPBar.gameObject.SetActive(true);
             currentHP -= damage;
+            
+            _enemyController.LastKnownPlayerPosition = _enemyController.Player.transform.position;
             _enemyController.StartChasing(); // 공격받으면 즉시 추격 상태로 전환
         }
 

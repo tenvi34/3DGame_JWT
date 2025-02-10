@@ -99,6 +99,9 @@ MonoBehaviour:
     type: 3}
   vfxHitRed: {fileID: 613433886817584985, guid: 9f5fbcfb6299c2b4c912f3ff44f14463,
     type: 3}
+  speed: 80
+  destroyTime: 3
+  damage: 20
 --- !u!1 &6863857337905034704
 GameObject:
   m_ObjectHideFlags: 0

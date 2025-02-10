@@ -38,19 +38,6 @@ namespace Enemy
         // 순찰 지점 순환 및 이동
         public override void Update(EnemyController controller)
         {
-            // // 순찰 지점이 없으면 종료
-            // if (controller.PatrolPoints.Length == 0) return;
-            //
-            // // 현재 순찰 지점에 도착했다면 다음 지점으로 변경
-            // if (Vector3.Distance(controller.transform.position, controller.PatrolPoints[controller.CurrentPatrolIndex].position) < 1f)
-            // {
-            //     // 다음 순찰 포인트로 이동 (순환)
-            //     controller.CurrentPatrolIndex = (controller.CurrentPatrolIndex + 1) % controller.PatrolPoints.Length;
-            // }
-            //
-            // // 다음 순찰 지점으로 이동
-            // controller.NavMeshAgent.destination = controller.PatrolPoints[controller.CurrentPatrolIndex].position;
-            
             if (controller.PatrolPoints == null || controller.PatrolPoints.Length == 0) return;
 
             // NavMeshAgent가 경로의 끝에 도달했는지 확인
@@ -167,6 +154,7 @@ namespace Enemy
             else
             {
                 // 플레이어를 더 이상 감지할 수 없으면 조사 상태로 전환
+                controller.LastKnownPlayerPosition = controller.Player.transform.position;
                 controller.TransitionToState(new InvestigateState());
             }
         }
