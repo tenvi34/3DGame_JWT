@@ -3570,6 +3570,8 @@ GameObject:
   - component: {fileID: 3361115420479608644}
   - component: {fileID: 7934682929356705426}
   - component: {fileID: 5531254877620364542}
+  - component: {fileID: 1772608330698179018}
+  - component: {fileID: 8104104580332577219}
   m_Layer: 7
   m_Name: Player_AssaultRifle01
   m_TagString: Player
@@ -3763,12 +3765,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 407c3eafc1b34b9fa7cf1b89d0456f74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _aimVirtualCamera: {fileID: 0}
+  aimCamera: {fileID: 0}
   normalSensitivity: 1
   aimSensitivity: 0.5
-  aimColliderLayerMask:
+  aimMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 65
   bulletPrefab: {fileID: 6863857337172796870, guid: 3ab9b70be08b74a4faf38871cfbf534e,
     type: 3}
   bulletSpawnPoint: {fileID: 5142651966158863528}
@@ -3778,11 +3780,123 @@ MonoBehaviour:
   - {fileID: 199458, guid: 7b6a7e40bd9ccc0489274923930761c7, type: 3}
   - {fileID: 199458, guid: 29d86feb88bf925428f9d7de6d4b401f, type: 3}
   - {fileID: 199458, guid: 4aa4c63f0f9d6a84dbaeed6b9caeca80, type: 3}
-  maxBullet: 30
-  currentBullet: 0
   audioSource: {fileID: 6432509400286828900}
-  shootSound: {fileID: 8300000, guid: 92d35fe1c59bbd14eaee9e3d3b54cea7, type: 3}
-  reloadSound: {fileID: 8300000, guid: 6a32a0d49cd240b4cb9934adf37a49a5, type: 3}
+  shootSound: {fileID: 8300000, guid: b82a66dab749415458d1f6600c997095, type: 3}
+  reloadSound: {fileID: 8300000, guid: d85099fefd84d429788e09001413207b, type: 3}
+  maxBullet: 30
+--- !u!82 &1772608330698179018
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1684166029043832}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &8104104580332577219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1684166029043832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f2bbf1db6dc4cb2989fadba59c4f100, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startingHealth: 100
+  healthSlider: {fileID: 0}
+  deathClip: {fileID: 0}
+  hitClip: {fileID: 0}
+  healClip: {fileID: 8300000, guid: a3194b8bbc96ef84fab1f98f4b7dae3e, type: 3}
 --- !u!1 &1717741747019804
 GameObject:
   m_ObjectHideFlags: 0
