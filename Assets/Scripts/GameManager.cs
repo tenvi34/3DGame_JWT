@@ -1,93 +1,71 @@
-using System.Collections;
-using System.Collections.Generic;
-using Player;
 using UnityEngine;
-using UnityEngine.UI;
+using Player;
 
+// 게임의 전반적인 상태와 점수를 관리하는 게임 매니저
 public class GameManager : MonoBehaviour
 {
-    // 싱글턴
-    public static GameManager Instance;
-
-    private ShooterController _shooterController;
-    
-    // [Header("Enemy Spawn")] [SerializeField]
-    // private GameObject enemyPrefab;
-    //
-    // [SerializeField] private Transform[] spawnPoints;
-    // [SerializeField] private int[] maxEnemiesPerSpawnPoint; // 각 스폰 지점별 최대 몬스터 수
-    //
-    // private int[] currentEnemiesAtSpawnPoint; // 현재 각 스폰 지점의 몬스터 수 추적
-
-    [Header("Bullet")] [SerializeField] private Text bulletText;
-
-    void Start()
+    // 싱글톤 패턴을 위한 인스턴스
+    private static GameManager _instance;
+    public static GameManager Instance
     {
-        Instance = this;
-        _shooterController = FindObjectOfType<ShooterController>();
-
-        // 현재 몬스터 수 배열 초기화
-        // currentEnemiesAtSpawnPoint = new int[spawnPoints.Length];
-
-        // StartCoroutine(EnemySpawn());
+        get
+        {
+            // 만약 싱글톤 변수에 아직 오브젝트가 할당되지 않았다면
+            if (_instance == null)
+            {
+                // 씬에서 GameManager 오브젝트를 찾아 할당
+                _instance = FindObjectOfType<GameManager>();
+            }
+            return _instance;
+        }
     }
 
-    void Update()
+    private int _score; // 현재 게임 점수
+    private bool _isGameOver; // 게임 오버 상태
+    // private PlayerHealth _player; // 플레이어 캐릭터
+
+    private void Awake()
     {
-        ShowBulletCount();
+        // 씬에 싱글톤 오브젝트가 된 다른 GameManager 오브젝트가 있다면
+        if (Instance != this)
+        {
+            // 자신을 파괴
+            Destroy(gameObject);
+            return;
+        }
+        
+        // 플레이어 캐릭터의 사망 이벤트 발생시 게임 오버
+        // _player = FindObjectOfType<PlayerHealth>();
+        // _player.onDeath += EndGame;
     }
 
-    /// <summary>
-    /// 총알 관리
-    /// </summary>
-    void ShowBulletCount()
+    // 점수를 추가하고 UI 갱신
+    public void AddScore(int points)
     {
-        bulletText.text = _shooterController.currentBullet + " / " + _shooterController.maxBullet;
+        // 게임 오버가 아닌 상태에서만 점수 증가 가능
+        if (_isGameOver) return;
+        
+        _score += points;
+        UIManager.Instance.UpdateScore(_score);
     }
 
-    /// <summary>
-    /// 몬스터 소환 관리
-    /// </summary>
-    // IEnumerator EnemySpawn()
-    // {
-    //     // 소환 가능한 스폰 포인트 찾기
-    //     List<int> availableSpawnPoints = new List<int>();
-    //     for (int i = 0; i < spawnPoints.Length; i++)
-    //     {
-    //         if (currentEnemiesAtSpawnPoint[i] < maxEnemiesPerSpawnPoint[i])
-    //         {
-    //             availableSpawnPoints.Add(i);
-    //         }
-    //     }
-    //
-    //     // 소환 가능한 지점이 있다면
-    //     if (availableSpawnPoints.Count > 0)
-    //     {
-    //         int selectedSpawnIndex = availableSpawnPoints[Random.Range(0, availableSpawnPoints.Count)];
-    //
-    //         // 몬스터 생성
-    //         GameObject spawnedEnemy = Instantiate(
-    //             enemyPrefab,
-    //             spawnPoints[selectedSpawnIndex].position,
-    //             Quaternion.identity
-    //         );
-    //
-    //         // 몬스터 수 증가
-    //         currentEnemiesAtSpawnPoint[selectedSpawnIndex]++;
-    //
-    //         // 몬스터 파괴 시 카운트 감소
-    //         // spawnedEnemy.GetComponent<Enemy.EnemyZombie>().OnEnemyDeath += DecreaseEnemyCount;
-    //     }
-    //
-    //     yield return new WaitForSeconds(2f);
-    //
-    //     // 2초마다 적 생성 시도
-    //     StartCoroutine(EnemySpawn());
-    // }
+    // 게임 오버 처리
+    public void EndGame()
+    {
+        // 게임 오버 상태가 아닐 때만 실행
+        if (_isGameOver) return;
+        
+        _isGameOver = true;
+        UIManager.Instance.ShowGameOver();
+    }
 
-    // 몬스터 카운트 감소 메서드
-    // void DecreaseEnemyCount(int spawnPointIndex)
-    // {
-    //     currentEnemiesAtSpawnPoint[spawnPointIndex]--;
-    // }
+    // 게임 승리 처리
+    public void Victory()
+    {
+        // 게임 오버 상태가 아닐 때만 실행
+        if (_isGameOver) return;
+        
+        _isGameOver = true;
+        UIManager.Instance.ShowVictory();
+    }
 }

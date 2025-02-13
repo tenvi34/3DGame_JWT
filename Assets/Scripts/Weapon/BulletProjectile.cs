@@ -2,66 +2,73 @@ using UnityEngine;
 
 namespace Weapon
 {
+    // 발사체의 동작을 담당하는 클래스
     public class BulletProjectile : MonoBehaviour
     {
-        [SerializeField] private Transform vfxHitGreen;
-        [SerializeField] private Transform vfxHitRed;
-        [SerializeField] private float speed = 50f;
-        [SerializeField] private float destroyTime = 3f;
-        [SerializeField] private float damage = 20f;
+        [Header("Visual Effects")]
+        [SerializeField] private Transform hitVFXNormal; // 일반 물체 피격 효과
+        [SerializeField] private Transform hitVFXEnemy; // 적 피격 효과
 
-        private Rigidbody _bulletRigidbody;
+        [Header("Settings")]
+        [SerializeField] private float speed = 50f; // 발사체 속도
+        [SerializeField] private float damage = 20f; // 발사체 데미지
+        [SerializeField] private float lifeTime = 3f; // 발사체 생존 시간
+
+        private Rigidbody _rigidbody; // 물리 처리를 위한 리지드바디
+        private bool _hasHit; // 충돌 여부
 
         private void Awake()
         {
-            _bulletRigidbody = GetComponent<Rigidbody>();
+            // 컴포넌트 초기화
+            _rigidbody = GetComponent<Rigidbody>();
         }
 
         private void Start()
         {
-            destroyTime -= Time.deltaTime;
-            if (destroyTime <= 0)
-            {
-                DestroyBullet();
-            }
-            
-            BulletShot();
+            // 초기 속도 설정
+            _rigidbody.velocity = transform.forward * speed;
+            // 일정 시간 후 자동 제거
+            Destroy(gameObject, lifeTime);
         }
 
-        private void BulletShot()
-        {
-            _bulletRigidbody.velocity = transform.forward * speed;
-        }
-        
-        // 허공에 쏴서 충돌 감지가 되지 않는 경우를 대비하여 일정 시간이 지나면 총알을 제거
-        private void DestroyBullet()
-        {
-            Destroy(gameObject);
-            destroyTime = 3;
-        }
-
+        // 충돌 처리
         private void OnTriggerEnter(Collider other)
         {
-            // if (other.GetComponent<BulletTarget>() != null)
-            // {
-            //     // 목표물에 맞았을 때 (Ex. 적)
-            //     Instantiate(vfxHitGreen, transform.position, Quaternion.identity);
-            // }
-            // else
-            // {
-            //     // 이외에 맞았을 때 (Ex. 벽, 오브젝트 등..)
-            //     Instantiate(vfxHitRed, transform.position, Quaternion.identity);
-            // }
+            // 이미 충돌했다면 처리하지 않음
+            if (_hasHit) return;
+            _hasHit = true;
 
-            
-            // 적에게 맞췄을 때
-            if (other.CompareTag("Enemy"))
+            // 데미지를 받을 수 있는 대상인지 확인
+            if (other.TryGetComponent<IDamageable>(out var target))
             {
-                other.gameObject.GetComponent<Enemy.EnemyZombie>().TakeDamage(damage);
+                // 충돌 지점과 방향 계산
+                Vector3 hitPoint = other.ClosestPoint(transform.position);
+                Vector3 hitNormal = transform.position - other.transform.position;
+                
+                // 데미지 처리
+                target.OnDamage(damage, hitPoint, hitNormal);
+                
+                // 적중 효과 재생
+                SpawnHitVFX(hitVFXEnemy, hitPoint, hitNormal);
+            }
+            else
+            {
+                // 일반 물체에 적중한 경우
+                SpawnHitVFX(hitVFXNormal, transform.position, transform.forward);
             }
 
-            Debug.Log("Hit: " + other.name);
+            // 발사체 제거
             Destroy(gameObject);
+        }
+
+        // 적중 효과 생성
+        private void SpawnHitVFX(Transform vfxPrefab, Vector3 position, Vector3 normal)
+        {
+            if (vfxPrefab == null) return;
+            
+            // 효과의 회전값 계산 및 생성
+            Quaternion rotation = Quaternion.LookRotation(normal);
+            Instantiate(vfxPrefab, position, rotation);
         }
     }
 }

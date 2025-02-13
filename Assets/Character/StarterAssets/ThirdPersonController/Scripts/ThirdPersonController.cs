@@ -5,9 +5,6 @@
 using UnityEngine.InputSystem;
 #endif
 
-/* Note: animations are called via the controller for both the character and capsule using animator null checks
- */
-
 namespace StarterAssets
 {
     [RequireComponent(typeof(CharacterController))]
@@ -113,7 +110,6 @@ namespace StarterAssets
         private CharacterController _controller;
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
-        private WeaponController _weaponController;
         private bool _rotateOnMove = true;
     
         private const float _threshold = 0.01f;
@@ -147,7 +143,6 @@ namespace StarterAssets
 
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
-            _weaponController = GetComponentInChildren<WeaponController>();
             _input = GetComponent<StarterAssetsInputs>();
 #if ENABLE_INPUT_SYSTEM
             _playerInput = GetComponent<PlayerInput>();

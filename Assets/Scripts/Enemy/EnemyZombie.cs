@@ -1,20 +1,12 @@
-using System;
-using System.Collections;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Enemy
 {
-    public class EnemyZombie : MonoBehaviour
+    public class EnemyZombie : LivingEntity
     {
         [SerializeField] private Slider HPBar;
         private EnemyController _enemyController;
-        
-        private float enemyMaxHP = 50;
-        public float currentHP = 0;
-
         private Animator _animator;
         private CapsuleCollider _enemyCollider;
 
@@ -26,43 +18,36 @@ namespace Enemy
             _animator = GetComponent<Animator>();
             _enemyCollider = GetComponent<CapsuleCollider>();
 
-            InitEnemyHP();
-
             HPBar.gameObject.SetActive(false);
         }
 
         private void Update()
         {
-            HPBar.value = currentHP / enemyMaxHP;
+            HPBar.value = health / startingHealth;
+        }
+
+        public override void OnDamage(float damage, Vector3 hitPoint, Vector3 hitNormal)
+        {
+            base.OnDamage(damage, hitPoint, hitNormal);
             
-            if (currentHP <= 0)
+            HPBar.gameObject.SetActive(true);
+            
+            if (!dead)
             {
-                Die();
+                _enemyController.LastKnownPlayerPosition = _enemyController.Player.transform.position;
+                _enemyController.StartChasing();
             }
         }
 
-        private void InitEnemyHP()
+        public override void Die()
         {
-            currentHP = enemyMaxHP;
-        }
-
-        private void Die()
-        {
+            base.Die();
+            
             _enemyController.NavMeshAgent.speed = 0;
             _animator.SetTrigger(Dead);
             _enemyCollider.enabled = false;
 
             Destroy(gameObject, 3f);
-        }
-
-        // 외부에서 호출 가능한 메서드들
-        public void TakeDamage(float damage)
-        {
-            HPBar.gameObject.SetActive(true);
-            currentHP -= damage;
-            
-            _enemyController.LastKnownPlayerPosition = _enemyController.Player.transform.position;
-            _enemyController.StartChasing(); // 공격받으면 즉시 추격 상태로 전환
         }
 
         public void ReactToSound(Vector3 soundPosition)

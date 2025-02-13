@@ -1,188 +1,166 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Cinemachine;
+﻿using Cinemachine;
 using StarterAssets;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using Weapon;
 using Random = UnityEngine.Random;
 
 namespace Player
 {
     public class ShooterController : MonoBehaviour
     {
-        // 설정값
-        [SerializeField] private CinemachineVirtualCamera _aimVirtualCamera;
-        [SerializeField] private float normalSensitivity;
-        [SerializeField] private float aimSensitivity;
-        [SerializeField] private LayerMask aimColliderLayerMask;
-        // [SerializeField] private Transform debugTransform;
-        
-        [Header("Bullet")]
-        [SerializeField] private Transform bulletPrefab;
-        [SerializeField] private Transform bulletSpawnPoint;
-        [SerializeField] private GameObject[] muzzleFlashPrefabs; // 총구 화염 프리팹 배열
-        public int maxBullet = 30;
-        public int currentBullet = 0;
-        
-        [Header("Sound")]
-        [SerializeField] private AudioSource audioSource; // AudioSource 컴포넌트
-        [SerializeField] private AudioClip shootSound;    // 총 발사 사운드 클립
-        [SerializeField] private AudioClip reloadSound;   // 장전 사운드 클립
+        [Header("Camera Settings")] [SerializeField]
+        private CinemachineVirtualCamera aimCamera; // 조준 카메라
 
-        // 체크
-        private bool _isReloading = false; // 장전중인지 확인
+        [SerializeField] private float normalSensitivity; // 일반 상태 감도
+        [SerializeField] private float aimSensitivity; // 조준 상태 감도
+        [SerializeField] private LayerMask aimMask; // 조준 가능한 레이어
 
-        private StarterAssetsInputs _starterAssetsInputs;
-        private ThirdPersonController _playerController;
-        private Animator _animator;
+        [Header("Weapon Settings")] [SerializeField]
+        private Transform bulletPrefab; // 발사체 프리팹
 
-        // 애니메이터
-        private static readonly int DoShoot = Animator.StringToHash("DoShoot"); // 사격
-        private static readonly int DoReload = Animator.StringToHash("DoReload"); // 장전
+        [SerializeField] private Transform bulletSpawnPoint; // 발사 위치
+        [SerializeField] private GameObject[] muzzleFlashPrefabs; // 총구 화염 효과
+
+        [Header("Audio")] [SerializeField] private AudioSource audioSource; // 오디오 소스
+        [SerializeField] private AudioClip shootSound; // 발사 소리
+        [SerializeField] private AudioClip reloadSound; // 재장전 소리
+
+        public int maxBullet = 30; // 최대 탄약 수
+        public int currentBullet { get; private set; } // 현재 탄약 수
+
+        private bool _isReloading; // 재장전 중 여부
+        private Animator _animator; // 애니메이터
+        private StarterAssetsInputs _input; // 입력 시스템
+
+        // 애니메이터 해시값 캐싱
+        private static readonly int ShootTrigger = Animator.StringToHash("DoShoot");
+        private static readonly int ReloadTrigger = Animator.StringToHash("DoReload");
 
         private void Awake()
         {
-            _starterAssetsInputs = GetComponent<StarterAssetsInputs>();
-            _playerController = GetComponent<ThirdPersonController>();
+            // 컴포넌트 초기화
             _animator = GetComponent<Animator>();
-            
-            InitBullet(); // 총알 초기화
+            _input = GetComponent<StarterAssetsInputs>();
+            currentBullet = maxBullet;
         }
 
         private void Update()
         {
-            AimMode(); // 조준 모드
-            Shoot(); // 사격
-
-            if (_starterAssetsInputs.reload && !_starterAssetsInputs.shoot && !_isReloading)
-            {
-                Debug.Log("장전 시작");
-                Reload();
-            }
+            // 매 프레임 처리할 기능들
+            HandleAiming();
+            HandleShooting();
+            HandleReload();
         }
 
-        // 조준 모드
-        private void AimMode()
+        // 조준 처리
+        private void HandleAiming()
         {
-            // 화면 중심에서 레이캐스트를 발사하여 조준점이 닿는 월드 좌표를 계산
+            // 화면 중앙에서 레이캐스트를 발사하여 조준점 위치 계산
             Vector3 mouseWorldPosition = Vector3.zero;
-            Vector2 screenCenterPoint = new Vector2(Screen.width / 2f, Screen.height / 2f);
-            Ray ray = Camera.main.ScreenPointToRay(screenCenterPoint);
-            if (Physics.Raycast(ray, out RaycastHit raycastHit, 999f, aimColliderLayerMask))
+            Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
+            Ray ray = Camera.main.ScreenPointToRay(screenCenter);
+
+            if (Physics.Raycast(ray, out RaycastHit hit, 999f, aimMask))
             {
-                // debugTransform.position = raycastHit.point;
-                mouseWorldPosition = raycastHit.point;
+                mouseWorldPosition = hit.point;
             }
 
-            if (_starterAssetsInputs.aim) // 조준 상태일 경우
+            // 조준 상태일 때
+            if (_input.aim)
             {
-                _aimVirtualCamera.gameObject.SetActive(true);
-                _playerController.SetSensitivity(aimSensitivity);
-                _playerController.SetRotateOnMove(false);
-                _starterAssetsInputs.sprint = false;
+                // 조준 카메라 활성화 및 감도 조정
+                aimCamera.gameObject.SetActive(true);
+                GetComponent<ThirdPersonController>().SetSensitivity(aimSensitivity);
+                GetComponent<ThirdPersonController>().SetRotateOnMove(false);
+                _input.sprint = false;
                 _animator.SetLayerWeight(1, 1);
 
-                // 캐릭터가 조준 방향을 부드럽게 바라보도록 설정
+                // 캐릭터를 조준 방향으로 부드럽게 회전
                 Vector3 worldAimTarget = mouseWorldPosition;
                 worldAimTarget.y = transform.position.y;
                 Vector3 aimDirection = (worldAimTarget - transform.position).normalized;
                 transform.forward = Vector3.Lerp(transform.forward, aimDirection, Time.deltaTime * 20f);
             }
-            else // 비조준 상태
+            else
             {
-                _aimVirtualCamera.gameObject.SetActive(false);
-                _playerController.SetSensitivity(normalSensitivity);
-                _playerController.SetRotateOnMove(true);
+                // 일반 상태로 전환
+                aimCamera.gameObject.SetActive(false);
+                GetComponent<ThirdPersonController>().SetSensitivity(normalSensitivity);
+                GetComponent<ThirdPersonController>().SetRotateOnMove(true);
                 _animator.SetLayerWeight(1, 0);
             }
         }
 
-        // 사격
-        private void Shoot()
+        // 발사 처리
+        private void HandleShooting()
         {
-            if (_starterAssetsInputs.shoot && _starterAssetsInputs.aim) // 조준 상태에서만 발사 가능
+            if (_input.shoot && _input.aim && !_isReloading && currentBullet > 0)
             {
-                if (currentBullet <= 0) return;
-                
-                _starterAssetsInputs.sprint = false;
-                
+                // 조준점 위치 계산
                 Vector3 mouseWorldPosition = Vector3.zero;
-                Vector2 screenCenterPoint = new Vector2(Screen.width / 2f, Screen.height / 2f);
-                Ray ray = Camera.main.ScreenPointToRay(screenCenterPoint);
-                if (Physics.Raycast(ray, out RaycastHit raycastHit, 999f, aimColliderLayerMask))
+                Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
+                Ray ray = Camera.main.ScreenPointToRay(screenCenter);
+
+                if (Physics.Raycast(ray, out RaycastHit hit, 999f, aimMask))
                 {
-                    mouseWorldPosition = raycastHit.point; // 조준점 위치를 활용
+                    mouseWorldPosition = hit.point;
                 }
 
-                // 총알 생성 및 발사 애니메이션 재생
+                // 발사 처리
                 Vector3 aimDir = (mouseWorldPosition - bulletSpawnPoint.position).normalized;
-                
-                SpawnRandomMuzzleFlash(); // 총구 화염 표시
-                PlaySound(shootSound); // 총 발사 사운드 재생
+                SpawnMuzzleFlash();
+                audioSource.PlayOneShot(shootSound);
+
+                // 발사체 생성
                 Instantiate(bulletPrefab, bulletSpawnPoint.position, Quaternion.LookRotation(aimDir, Vector3.up));
-                currentBullet -= 1; // 총알 감소
-                _animator.SetTrigger(DoShoot);
+                currentBullet -= 1;
+                _animator.SetTrigger(ShootTrigger);
 
-                _starterAssetsInputs.shoot = false;
+                // UI 갱신
+                UIManager.Instance.UpdateAmmoText(currentBullet, maxBullet);
             }
-            else
+
+            _input.shoot = false;
+        }
+
+        // 재장전 처리
+        private void HandleReload()
+        {
+            if (_input.reload && !_isReloading && currentBullet < maxBullet)
             {
-                _starterAssetsInputs.shoot = false;
+                StartReload();
             }
         }
 
-        // 장전
-        private void Reload()
+        // 재장전 시작
+        private void StartReload()
         {
-            if (_isReloading) return; // 이미 장전 중이면 실행하지 않음
-
-            _isReloading = true; // 장전 상태 활성화
-            _animator.SetTrigger(DoReload); // 장전 애니메이션 실행
-            _starterAssetsInputs.reload = false; // 입력 초기화
-            
-            PlaySound(reloadSound); // 장전 사운드 재생
-
-            // 애니메이션 길이 가져오기
-            // AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0); // 0은 Base Layer
-            // float reloadAnimationLength = stateInfo.length; // 현재 재생 중인 상태의 애니메이션 길이
-
-            Invoke(nameof(ReloadOut), 1f);
+            _isReloading = true;
+            _animator.SetTrigger(ReloadTrigger);
+            audioSource.PlayOneShot(reloadSound);
+            Invoke(nameof(CompleteReload), 1f);
         }
 
-        private void ReloadOut()
-        {
-            _starterAssetsInputs.reload = false;
-            _isReloading = false; // 장전 상태 초기화
-            InitBullet(); // 총알 초기화
-        }
-        
-        private void InitBullet()
+        // 재장전 완료
+        private void CompleteReload()
         {
             currentBullet = maxBullet;
+            _isReloading = false;
+            _input.reload = false;
+            UIManager.Instance.UpdateAmmoText(currentBullet, maxBullet);
         }
-        
-        private void SpawnRandomMuzzleFlash()
-        {
-            // 총구 화염 프리팹 배열 중 랜덤으로 선택
-            int randomIndex = Random.Range(0, muzzleFlashPrefabs.Length);
-            GameObject selectedMuzzleFlash = muzzleFlashPrefabs[randomIndex];
 
-            // 선택된 총구 화염을 활성화
-            GameObject muzzleFlashInstance = Instantiate(
-                selectedMuzzleFlash, 
-                bulletSpawnPoint.position, 
+        // 총구 화염 효과 생성
+        private void SpawnMuzzleFlash()
+        {
+            int randomIndex = Random.Range(0, muzzleFlashPrefabs.Length);
+            GameObject muzzleFlash = Instantiate(
+                muzzleFlashPrefabs[randomIndex],
+                bulletSpawnPoint.position,
                 bulletSpawnPoint.rotation
             );
 
-            // 일정 시간 후 자동 삭제
-            Destroy(muzzleFlashInstance, 0.05f); // 총구 화염은 0.05초 뒤에 삭제
-        }
-        
-        private void PlaySound(AudioClip audioClip)
-        {
-            audioSource.PlayOneShot(audioClip);
+            // 짧은 시간 후 제거
+            Destroy(muzzleFlash, 0.05f);
         }
     }
 }
