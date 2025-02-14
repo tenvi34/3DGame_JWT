@@ -6,6 +6,7 @@ namespace Enemy
 {
     public class EnemySpawnAndPatrolManager : MonoBehaviour
     {
+        // 적 및 소환 수 설정
         [System.Serializable]
         public class EnemyTypeConfig
         {
@@ -14,6 +15,7 @@ namespace Enemy
             [HideInInspector] public int currentSpawnCount; // 현재 스폰된 수를 추적
         }
 
+        // 순찰 포인트 설정
         [System.Serializable]
         public class SpawnPointConfig
         {

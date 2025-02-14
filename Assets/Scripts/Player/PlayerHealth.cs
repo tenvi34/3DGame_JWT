@@ -1,4 +1,5 @@
 ﻿using System;
+using StarterAssets;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,12 +18,14 @@ namespace Player
         private AudioSource _playerAudio; // 오디오 소스 컴포넌트
         private Animator _animator;
         private ShooterController _shooterController;
+        private ThirdPersonController _playerController;
 
         private void Awake()
         {
             _playerAudio = GetComponent<AudioSource>();
             _animator = GetComponent<Animator>();
             _shooterController = GetComponent<ShooterController>();
+            _playerController = GetComponent<ThirdPersonController>();
         }
 
         // LivingEntity의 OnEnable() 실행 (상태 초기화)
@@ -69,13 +72,14 @@ namespace Player
             base.Die();
             
             // 체력바 비활성화
-            healthSlider.gameObject.SetActive(false);
+            // healthSlider.gameObject.SetActive(false);
             
             // 사망 애니메이션 재생 및 효과음 재생
             _playerAudio.PlayOneShot(deathClip);
             _animator.SetTrigger("Die");
             
             // 플레이어 조작 비활성화
+            _playerController.enabled = false;
             _shooterController.enabled = false;
             
             // 게임 오버 처리
