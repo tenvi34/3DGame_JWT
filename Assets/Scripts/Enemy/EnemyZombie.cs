@@ -52,7 +52,7 @@ namespace Enemy
             HPBar.gameObject.SetActive(false);
             
             // 적 능력치 설정
-            Setup(zombieHealth, zombieDamage, zombieDamage);
+            Setup(zombieHealth, zombieDamage, zombieSpeed);
         }
 
         private void Update()
