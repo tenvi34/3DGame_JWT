@@ -1,26 +1,29 @@
 ﻿using Cinemachine;
 using StarterAssets;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 namespace Player
 {
     public class ShooterController : MonoBehaviour
     {
-        [Header("Camera Settings")] [SerializeField]
-        private CinemachineVirtualCamera aimCamera; // 조준 카메라
+        [Header("Camera Settings")] 
+        [SerializeField] private CinemachineVirtualCamera aimCamera; // 조준 카메라
+        [SerializeField] private RawImage crosshair; // 조준점
 
         [SerializeField] private float normalSensitivity; // 일반 상태 감도
         [SerializeField] private float aimSensitivity; // 조준 상태 감도
         [SerializeField] private LayerMask aimMask; // 조준 가능한 레이어
 
-        [Header("Weapon Settings")] [SerializeField]
-        private Transform bulletPrefab; // 발사체 프리팹
+        [Header("Weapon Settings")] 
+        [SerializeField] private Transform bulletPrefab; // 발사체 프리팹
 
         [SerializeField] private Transform bulletSpawnPoint; // 발사 위치
         [SerializeField] private GameObject[] muzzleFlashPrefabs; // 총구 화염 효과
 
-        [Header("Audio")] [SerializeField] private AudioSource audioSource; // 오디오 소스
+        [Header("Audio")] 
+        [SerializeField] private AudioSource audioSource; // 오디오 소스
         [SerializeField] private AudioClip shootSound; // 발사 소리
         [SerializeField] private AudioClip reloadSound; // 재장전 소리
 
@@ -41,6 +44,7 @@ namespace Player
             _animator = GetComponent<Animator>();
             _input = GetComponent<StarterAssetsInputs>();
             currentBullet = maxBullet;
+            crosshair.gameObject.SetActive(false);
         }
 
         private void Update()
@@ -69,6 +73,7 @@ namespace Player
             {
                 // 조준 카메라 활성화 및 감도 조정
                 aimCamera.gameObject.SetActive(true);
+                crosshair.gameObject.SetActive(true);
                 GetComponent<ThirdPersonController>().SetSensitivity(aimSensitivity);
                 GetComponent<ThirdPersonController>().SetRotateOnMove(false);
                 _input.sprint = false;
@@ -84,6 +89,7 @@ namespace Player
             {
                 // 일반 상태로 전환
                 aimCamera.gameObject.SetActive(false);
+                crosshair.gameObject.SetActive(false);
                 GetComponent<ThirdPersonController>().SetSensitivity(normalSensitivity);
                 GetComponent<ThirdPersonController>().SetRotateOnMove(true);
                 _animator.SetLayerWeight(1, 0);
