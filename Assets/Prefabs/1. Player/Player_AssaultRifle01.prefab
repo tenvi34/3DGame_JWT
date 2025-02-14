@@ -3906,7 +3906,7 @@ MonoBehaviour:
   healthSlider: {fileID: 0}
   deathClip: {fileID: 0}
   hitClip: {fileID: 0}
-  healClip: {fileID: 8300000, guid: a3194b8bbc96ef84fab1f98f4b7dae3e, type: 3}
+  healClip: {fileID: 0}
 --- !u!1 &1717741747019804
 GameObject:
   m_ObjectHideFlags: 0
