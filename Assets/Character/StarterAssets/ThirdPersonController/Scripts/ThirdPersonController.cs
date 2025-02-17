@@ -181,8 +181,6 @@ namespace StarterAssets
             _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
             _animIDAiming = Animator.StringToHash("IsAiming");
-            // _animIDShot = Animator.StringToHash("DoShot");
-            // _animIDReload = Animator.StringToHash("DoReload");
         }
 
         // 캐릭터가 지면에 닿아 있는지 확인하고 애니메이터를 업데이트
@@ -286,9 +284,6 @@ namespace StarterAssets
             {
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
-                
-                // 견착 상태
-                // _animator.SetBool(_animIDAiming, _input.aim && Input.GetMouseButton(1));
             }
         }
 

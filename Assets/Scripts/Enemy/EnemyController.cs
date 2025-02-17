@@ -83,6 +83,8 @@ namespace Enemy
         // 소리에 반응하여 조사 상태로 전환
         public void ReactToPlayerSound()
         {
+            // 실제 소리 감지되는 기능 구현해야 함 ========================================
+            
             LastKnownPlayerPosition = Player.transform.position;
             TransitionToState(new InvestigateState());
         }

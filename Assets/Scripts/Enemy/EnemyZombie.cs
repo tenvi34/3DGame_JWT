@@ -9,7 +9,8 @@ namespace Enemy
         [Header("Zombie Stats")]
         [SerializeField] private float zombieHealth = 100f; // 좀비 체력
         [SerializeField] private float zombieDamage = 20f; // 공격력
-        [SerializeField] private float zombieSpeed = 3f; // 이동 속도
+        [SerializeField] private float zombieWalkSpeed = 2f; // 걷기 속도
+        [SerializeField] private float zombieRunSpeed = 2f; // 달리기 속도
         [SerializeField] private float attackRange = 0.5f; // 공격 범위
         public float timeBetAttack = 3f; // 공격 간격
         private float lastAttackTime; // 마지막 공격 시간
@@ -23,6 +24,11 @@ namespace Enemy
         public AudioClip deathSound; // 사망시 재생할 소리
         public AudioClip hitSound; // 피격시 재생할 소리
         public ParticleSystem hitEffect; // 피격시 재생할 파티클 효과
+        
+        // IEnemy
+        public float AttackRange => attackRange;
+        public float WalkSpeed => zombieWalkSpeed;
+        public float RunSpeed => zombieRunSpeed;
         
         private static readonly int Dead = Animator.StringToHash("Dead");
         
@@ -52,7 +58,7 @@ namespace Enemy
             HPBar.gameObject.SetActive(false);
             
             // 적 능력치 설정
-            Setup(zombieHealth, zombieDamage, zombieSpeed);
+            Setup(zombieHealth, zombieDamage, zombieWalkSpeed);
         }
 
         private void Update()
@@ -104,9 +110,7 @@ namespace Enemy
             _enemyController.LastKnownPlayerPosition = soundPosition;
             _enemyController.ReactToPlayerSound();
         }
-
-        // 공격
-        public float AttackRange => attackRange;
+        
         // 공격 범위안에 타겟이 있는지 확인
         public bool IsInAttackRange(Vector3 targetPosition)
         {
