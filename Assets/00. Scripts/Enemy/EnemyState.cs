@@ -41,8 +41,8 @@ namespace Enemy
                 controller.NavMeshAgent.speed = enemy.WalkSpeed;
             }
 
-            // BlendTree Threshold에 맞춘 걷기 애니메이션 설정 (walk2 = 2)
-            controller.Animator.SetFloat(MoveSpeed, 2f);
+            // 걷기 애니메이션으로 설정
+            EnemyAnimationController.SetAnimation(controller, false);
         }
 
         // 순찰 지점 순환 및 이동
@@ -56,10 +56,10 @@ namespace Enemy
             {
                 // 다음 순찰 지점으로 이동
                 controller.MoveToNextPatrolPoint();
-
-                // 정지 상태면 idle 애니메이션(0), 이동 중이면 걷기 애니메이션(2)
-                controller.Animator.SetFloat(MoveSpeed, controller.NavMeshAgent.velocity.magnitude < 0.1f ? 0f : 2f);
             }
+            
+            // 애니메이션 업데이트
+            EnemyAnimationController.UpdateAnimation(controller);
 
             // 플레이어 감지 레이캐스트
             Vector3 directionToPlayer =
@@ -105,8 +105,8 @@ namespace Enemy
             _investigationTimer = 0f;
             controller.NavMeshAgent.destination = controller.LastKnownPlayerPosition;
 
-            // BlendTree Threshold에 맞춘 걷기 애니메이션 설정 (walk2 = 2)
-            controller.Animator.SetFloat(MoveSpeed, 2f);
+            // 걷기 애니메이션으로 설정
+            EnemyAnimationController.SetAnimation(controller, false);
         }
 
         // 일정 시간 후 순찰 상태로 복귀
@@ -121,8 +121,8 @@ namespace Enemy
                 return;
             }
 
-            // 정지 상태면 idle 애니메이션(0), 이동 중이면 걷기 애니메이션(2)
-            controller.Animator.SetFloat(MoveSpeed, controller.NavMeshAgent.velocity.magnitude < 0.1f ? 0f : 2f);
+            // 애니메이션 업데이트
+            EnemyAnimationController.UpdateAnimation(controller);
         }
     }
 
@@ -141,8 +141,8 @@ namespace Enemy
                 controller.NavMeshAgent.speed = enemy.RunSpeed;
             }
 
-            // BlendTree Threshold에 맞춘 달리기 애니메이션 설정 (run = 5)
-            controller.Animator.SetFloat(MoveSpeed, 5f);
+            // 달리기 애니메이션으로 설정
+            EnemyAnimationController.SetAnimation(controller, true);
         }
 
         public override void Update(EnemyController controller)
@@ -169,8 +169,8 @@ namespace Enemy
                 controller.NavMeshAgent.destination = controller.Player.transform.position;
                 controller.transform.LookAt(controller.Player.transform.position);
 
-                // 정지 상태면 idle 애니메이션(0), 이동 중이면 달리기 애니메이션(5)
-                controller.Animator.SetFloat(MoveSpeed, controller.NavMeshAgent.velocity.magnitude < 0.1f ? 0f : 5f);
+                // 애니메이션 업데이트
+                EnemyAnimationController.UpdateAnimation(controller);
 
                 // 공격 범위 확인
                 var enemy = controller.GetComponent<IEnemy>();
@@ -204,7 +204,8 @@ namespace Enemy
 
             // 이동 정지
             controller.NavMeshAgent.isStopped = true;
-            controller.Animator.SetFloat(MoveSpeed, 0);
+            // idle 애니메이션으로 설정
+            EnemyAnimationController.SetAnimation(controller, false);
         }
 
         public override void Update(EnemyController controller)
@@ -219,7 +220,7 @@ namespace Enemy
             var enemy = controller.GetComponent<IEnemy>();
             if (enemy == null) return;
 
-            float distanceToPlayer = Vector3.Distance(controller.transform.position, controller.Player.transform.position);
+            // float distanceToPlayer = Vector3.Distance(controller.transform.position, controller.Player.transform.position);
 
             // 공격 범위를 벗어나면 추격 상태로 전환
             if (!enemy.IsInAttackRange(controller.Player.transform.position))
