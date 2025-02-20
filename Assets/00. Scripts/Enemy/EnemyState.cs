@@ -39,10 +39,9 @@ namespace Enemy
             if (enemy != null)
             {
                 controller.NavMeshAgent.speed = enemy.WalkSpeed;
+                // 걷기 애니메이션으로 설정
+                EnemyAnimationController.SetAnimation(controller, false);
             }
-
-            // 걷기 애니메이션으로 설정
-            EnemyAnimationController.SetAnimation(controller, false);
         }
 
         // 순찰 지점 순환 및 이동
@@ -100,6 +99,7 @@ namespace Enemy
             if (enemy != null)
             {
                 controller.NavMeshAgent.speed = enemy.WalkSpeed;
+                EnemyAnimationController.SetAnimation(controller, false);
             }
 
             _investigationTimer = 0f;
@@ -113,6 +113,19 @@ namespace Enemy
         public override void Update(EnemyController controller)
         {
             _investigationTimer += Time.deltaTime;
+            
+            // 목적지에 도착했는지 확인
+            if (!controller.NavMeshAgent.pathPending && 
+                controller.NavMeshAgent.remainingDistance <= controller.NavMeshAgent.stoppingDistance)
+            {
+                // 도착 시 Idle 애니메이션으로 전환
+                EnemyAnimationController.SetIdleAnimation(controller);
+            }
+            else
+            {
+                // 이동 중에는 계속 애니메이션 업데이트
+                EnemyAnimationController.UpdateAnimation(controller);
+            }
 
             // 조사 시간 초과 시 순찰 상태로 전환
             if (_investigationTimer >= controller.InvestigationTime)
@@ -139,10 +152,9 @@ namespace Enemy
             if (enemy != null)
             {
                 controller.NavMeshAgent.speed = enemy.RunSpeed;
+                // 달리기 애니메이션으로 설정
+                EnemyAnimationController.SetAnimation(controller, true);
             }
-
-            // 달리기 애니메이션으로 설정
-            EnemyAnimationController.SetAnimation(controller, true);
         }
 
         public override void Update(EnemyController controller)
@@ -202,10 +214,9 @@ namespace Enemy
                 controller.transform.LookAt(controller.Player.transform.position);
             }
 
-            // 이동 정지
+            // 이동 정지 및 Idle 애니메이션 설정
             controller.NavMeshAgent.isStopped = true;
-            // idle 애니메이션으로 설정
-            // EnemyAnimationController.SetAnimation(controller, false);
+            EnemyAnimationController.SetIdleAnimation(controller);
         }
 
         public override void Update(EnemyController controller)
