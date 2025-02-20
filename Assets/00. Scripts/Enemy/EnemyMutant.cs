@@ -13,7 +13,7 @@ namespace Enemy
         [Header("Mutant Stats")]
         [SerializeField] private float mutantHealth = 150f; // 체력
         [SerializeField] private float mutantDamage = 20f; // 공격력
-        [SerializeField] private float mutantWalkSpeed = 2f; // 걷기 속도
+        [SerializeField] private float mutantWalkSpeed = 1f; // 걷기 속도
         [SerializeField] private float mutantRunSpeed = 2f; // 달리기 속도
         [SerializeField] private float attackRange = 0.5f; // 공격 범위
         public float timeBetAttack = 3f; // 공격 간격

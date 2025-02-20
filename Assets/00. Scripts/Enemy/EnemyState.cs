@@ -205,7 +205,7 @@ namespace Enemy
             // 이동 정지
             controller.NavMeshAgent.isStopped = true;
             // idle 애니메이션으로 설정
-            EnemyAnimationController.SetAnimation(controller, false);
+            // EnemyAnimationController.SetAnimation(controller, false);
         }
 
         public override void Update(EnemyController controller)

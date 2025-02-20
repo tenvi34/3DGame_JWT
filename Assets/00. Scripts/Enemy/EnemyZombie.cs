@@ -74,7 +74,7 @@ namespace Enemy
             if (!dead)
             {
                 _enemyController.LastKnownPlayerPosition = _enemyController.Player.transform.position;
-                _enemyController.StartChasing();
+                _enemyController.StartChasing(); // 추격 상태로 전환
                 
                 // 공격받은 지점과 방향으로 파티클 효과 재생
                 hitEffect.transform.position = hitPoint;
@@ -119,8 +119,10 @@ namespace Enemy
         // 공격 실행
         public void TryAttack()
         {
+            Debug.Log("공격 진입");
             if (Time.time - lastAttackTime >= timeBetAttack)
             {
+                Debug.Log("공격 시도");
                 // 공격 애니메이션만 실행
                 _animator.SetTrigger("Attack");
                 lastAttackTime = Time.time;
@@ -131,7 +133,7 @@ namespace Enemy
         public void OnAttackPoint()
         {
             // 데미지 처리 전에 플레이어가 여전히 공격 범위 내에 있는지 체크
-            if (_enemyController.Player != null && IsInAttackRange(_enemyController.Player.transform.position))
+            if (_enemyController.Player !=null && IsInAttackRange(_enemyController.Player.transform.position))
             {
                 if (_enemyController.Player.TryGetComponent<IDamageable>(out var target))
                 {
